@@ -136,7 +136,7 @@ namespace ns_device
 				if (++ss_min == 60)
 				{
 					ss_min = 0;
-					if (++ss_chs = 24)
+					if (++ss_chs == 24)
 					{
 						ss_chs = 0;
 					}
