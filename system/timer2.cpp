@@ -79,7 +79,7 @@ namespace ns_timerMain
 		// настройка частоты
 		TCCR2_FOC2 = 0;
 		TCNT2 = 0;
-		uint8_t div = (((unsigned long)F_CPU)/prDiv/FtTimerMain)-1;;
+		uint8_t div = (uint8_t)( (F_CPU / (prDiv * FtTimerMain) ) - 1);
 		OCR2 = div;
 		TIFR_OCF2 = 0;
 		TIFR_TOV2 = 0;
@@ -136,7 +136,7 @@ void Init()
 	// настройка частоты
 	TCCR2_FOC2 = 0;
 	TCNT2 = 0;
-	uint8_t div = (((unsigned long)F_CPU)/prDiv/FtTimerMain)-1;;
+	uint8_t div = (((unsigned long)F_CPU)/prDiv/FtTimerMain)-1;
 	OCR2 = div;
 	TIFR_OCF2 = 0;
 	TIFR_TOV2 = 0;

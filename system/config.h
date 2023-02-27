@@ -9,11 +9,6 @@
 #ifndef CONFIG_H_
 #define CONFIG_H_
 
-// #ifdef F_CPU
-// #undef F_CPU
-// #endif // F_CPU
-// #define F_CPU 8000000
-
 #define CONF_LCD
 //#define CONF_LCD_24
 

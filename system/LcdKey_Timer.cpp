@@ -154,10 +154,10 @@ namespace ns_LcdKeyTimer
 
 	ISR (TIMER0_COMP_vect)
 	{
-// 		TIMSK_OCIE0 = 0;
-// 		sei();
+		TIMSK_OCIE0 = 0;
+		sei();
 		ns_device::Timer_lcd();
-// 		TIMSK_OCIE0 = 1;
+		TIMSK_OCIE0 = 1;
 	}
 
 }
