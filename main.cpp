@@ -31,6 +31,7 @@ int main(void)
 		SCRN->PutChar((*p)++, ':');
 		SCRN->Hex(p, ss);
 		__delay_ms(1000);
+		SCRN->Hex(30, ns_device::key->InKey());
 //		SCRN->DigitZ(23, 5, SCRN->scrFlashPtr_x);
  		//ns_device::scr->Interrupt();
     }

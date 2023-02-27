@@ -24,9 +24,10 @@
 #include "Lcd.h"
 #endif // CONF_LCD
 
-// #if defined(CONF_KEY4)
-// #include "key4.h"
-// #endif
+#ifdef CONF_KEY4
+#include "key4.h"
+#endif // CONF_KEY4
+
 // 
 // #if defined(CONF_MENU)
 // #include "menu.h"
@@ -58,12 +59,17 @@
 
 namespace ns_device
 {
+#ifdef CONF_LCD
 	extern Lcd	*scr;
+#endif // CONF_LCD
+
+#ifdef CONF_KEY4
+	extern tc_key4		*key;
+#endif // CONF_KEY4
 	
 	
 //	extern FILE			*strmScr;
 	//extern FILE			*rs232StdOut;
-//	extern tc_key4		*key;
 	//users
 //	extern SwitchMode	*switchMode;
 // 	extern AcpNorm		*acpNormDistance;

@@ -23,7 +23,6 @@ namespace ns_device
 {
 	FILE		*strmScr = nullptr;
 //	FILE		*rs232StdOut;
-//	tc_key4		*key;
 	// users
 //	SwitchMode	*switchMode;
 //	Core		*core;
@@ -34,7 +33,10 @@ namespace ns_device
  	Lcd_hard *scr_vn = nullptr;
  	Lcd	*scr = nullptr;
 #endif // CONF_LCD
-	
+#ifdef CONF_KEY4
+	tc_key4		*key;
+#endif // CONF_KEY4
+
 	void Init()
 	{
 #ifdef CONF_LCD
@@ -47,6 +49,10 @@ namespace ns_device
 #endif // CONF_LCD_24
 #endif // CONF_LCD
 
+#ifdef CONF_KEY4
+ 		key = new tc_key4;
+#endif
+
 #ifdef CONF_TIMER_LCDKEY
  		ns_LcdKeyTimer::Init();
 #endif // CONF_TIMER_LCDKEY
@@ -55,7 +61,6 @@ namespace ns_device
 		
 // 		rs232StdOut = ns_rs232::Init(baud57600, DISABLE, bit8, size128, size256);
 // 		ns_rs232::String_P(PSTR(" Start programm"));
-// 		key = new tc_key4;
 		// ====== users ======
 		// переключатель режима
 // 		switchMode = new SwitchMode(
@@ -98,9 +103,9 @@ namespace ns_device
 #if defined(CONF_LCD)
 		scr->Interrupt();
 #endif
-// #if defined(CONF_KEY4)
-// 		key->Interrupt();
-// #endif
+#if defined(CONF_KEY4)
+		key->Interrupt();
+#endif
 // #if defined(CONF_MENU)
 // 		ns_menu::Interrupt();
 // #endif
