@@ -28,4 +28,8 @@
 #define CONF_TIMER_LCDKEY
 #endif
 
+#if !defined(CONF_LCD) or !defined(CONF_KEY4)
+#undef CONF_MENU
+#endif
+
 #endif /* CONFIG_H_ */

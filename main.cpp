@@ -8,32 +8,44 @@
 #include <avr/io.h>
 #include "device.h"
 
-#define SCRN ns_device::scr
+#define SCR ns_device::scr
+#define KEY ns_device::key
 
 int main(void)
 {
+#ifdef CONF_MENU
+	while (true)
+	{
+		ns_device::MainCicle();
+	}
+#endif
+#ifndef CONF_MENU
+	int16_t x_count = 0;
 	ns_device::Init();
 	sei();
-	SCRN->Clear();
-	SCRN->String_P((uint8_t)0, PSTR("Hello World !!!") );
-	SCRN->String_P((uint8_t)25, PSTR("Мир") );
+	SCR->Clear();
+	SCR->String_P((uint8_t)0, PSTR("Hello World !!!") );
+	SCR->String_P((uint8_t)25, PSTR("Мир") );
 	
-    /* Replace with your application code */
-		char ss = 0;
-		uint8_t p[] = {16};
-    while (1) 
-    {
-		//if (++ss > 99) ss =0;
-		ss++;
-		//ns_device::scr->screen[1] = ss + '0';
+	/* Replace with your application code */
+	char ss = 0;
+	uint8_t p[] = {16};
+	while (1)
+	{
+		__delay_ms(1);
+		if (++x_count == 800)
+		{
+			x_count = 0;
+			ss++;
+		}
 		p[0] = 16;
-		SCRN->Digit(p, 3, ss);
-		SCRN->PutChar((*p)++, ':');
-		SCRN->Hex(p, ss);
-		__delay_ms(1000);
-		SCRN->Hex(30, ns_device::key->InKey());
-//		SCRN->DigitZ(23, 5, SCRN->scrFlashPtr_x);
- 		//ns_device::scr->Interrupt();
-    }
+		SCR->Digit(p, 3, ss);
+		SCR->PutChar((*p)++, ':');
+		SCR->Hex(p, ss);
+		SCR->Hex(30, KEY->InKey());
+		//		SCRN->DigitZ(23, 5, SCRN->scrFlashPtr_x);
+		//ns_device::scr->Interrupt();
+	}
+#endif
 }
 
