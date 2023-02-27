@@ -180,6 +180,12 @@
     <Compile Include="device.cpp">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="system\timer2.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <None Include="system\timer2.h">
+      <SubType>compile</SubType>
+    </None>
     <None Include="device.h">
       <SubType>compile</SubType>
     </None>

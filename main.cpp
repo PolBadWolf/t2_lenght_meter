@@ -42,7 +42,9 @@ int main(void)
 		SCR->Digit(p, 3, ss);
 		SCR->PutChar((*p)++, ':');
 		SCR->Hex(p, ss);
-		SCR->Hex(30, KEY->InKey());
+#ifdef CONF_KEY4
+		SCR->Hex(14, KEY->InKey());
+#endif // CONF_KEY4
 		//		SCRN->DigitZ(23, 5, SCRN->scrFlashPtr_x);
 		//ns_device::scr->Interrupt();
 	}

@@ -19,6 +19,8 @@
 
 #define CONF_KEY4
 // #define CONF_MENU
+
+#define CONF_TIMER_MAIN
 // 
 // #if !defined(CONF_LCD) or !defined(CONF_KEY4)
 // #undef CONF_MENU

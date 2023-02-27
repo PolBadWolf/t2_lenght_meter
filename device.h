@@ -18,7 +18,9 @@
 #include "LcdKey_Timer.h"
 #endif // CONF_TIMER_LCDKEY
 
-//#include "timer2.h"
+#ifdef CONF_TIMER_MAIN
+#include "timer2.h"
+#endif // CONF_TIMER_MAIN
 
 #ifdef CONF_LCD
 #include "Lcd.h"
@@ -66,7 +68,7 @@ namespace ns_device
 #ifdef CONF_KEY4
 	extern tc_key4		*key;
 #endif // CONF_KEY4
-	
+
 	
 //	extern FILE			*strmScr;
 	//extern FILE			*rs232StdOut;

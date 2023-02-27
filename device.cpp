@@ -56,7 +56,11 @@ namespace ns_device
 #ifdef CONF_TIMER_LCDKEY
  		ns_LcdKeyTimer::Init();
 #endif // CONF_TIMER_LCDKEY
-// 		ns_timerMain::Init();
+
+#ifdef CONF_TIMER_MAIN
+		ns_timerMain::Init();
+#endif // CONF_TIMER_MAIN
+
 // 		strmScr = scr::Init(16);
 		
 // 		rs232StdOut = ns_rs232::Init(baud57600, DISABLE, bit8, size128, size256);
@@ -115,8 +119,46 @@ namespace ns_device
 //		ns_ModeWorks::Interrupt();
 	}
 // =======================================
+	uint16_t ss_count = 0;
+	uint8_t  ss_sec = 0;
+	uint8_t  ss_min = 0;
+	uint8_t  ss_chs = 0;
 	void Timer_Usr()
 	{
+		bool ss_event = false;
+		if (++ss_count == 1000)
+		{
+			ss_count = 0;
+			ss_event = true;
+			if (++ss_sec == 60)
+			{
+				ss_sec = 0;
+				if (++ss_min == 60)
+				{
+					if (++ss_chs = 24)
+					{
+						ss_chs = 0;
+					}
+				}
+			}
+		}
+#define SCR		ns_device::scr
+		if (ss_event)
+		{
+			SCR->DigitZ(23, 2, ss_chs);
+			SCR->DigitZ(26, 2, ss_min);
+			SCR->DigitZ(29, 2, ss_sec);
+			if (ss_count < 500)
+			{
+				SCR->PutChar(25, ':'); 
+				SCR->PutChar(28, ':');
+			}
+			else
+			{
+				SCR->PutChar(25, ' ');
+				SCR->PutChar(28, ' ');
+			}
+		}
 // 		if (--preDiv == 0)
 // 		{
 // 			preDiv = PREDIV_ARCHIVE;
@@ -128,9 +170,9 @@ namespace ns_device
 	}
 	void MainCicle()
 	{
-#if defined(CONF_MENU)
+#ifdef CONF_MENU
 		ns_menu::Main();
-#endif
+#endif // CONF_MENU
 		// заглушка
 // 		switchMode->MainCicle();
 // 		ns_watchdog::ResetCount();
