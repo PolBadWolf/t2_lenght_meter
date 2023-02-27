@@ -5,9 +5,9 @@
  *  Author: GumerovMN
  */ 
 
-#ifndef __PATH_H_
-#include "path.h"
-#endif
+// #ifndef __PATH_H_
+// #include "path.h"
+// #endif
 
 
 #ifndef PATH_MEGA16_H_

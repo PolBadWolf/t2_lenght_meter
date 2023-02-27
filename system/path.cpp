@@ -41,9 +41,9 @@ const char tabWin2Avr[] PROGMEM =
 	112,	99,		191,	121,	228,	120,	229,	192,	193,	230,	194,	195,	196,	197,	198,	199
 };
 
-#ifndef __OPTIMIZE__
-# warning "Compiler optimizations disabled; functions delay won't work as designed"
-#endif
+// #ifndef __OPTIMIZE__
+// # warning "Compiler optimizations disabled; functions delay won't work as designed"
+// #endif
 
 //FILE*	myStdOut1;
 //FILE*	myStdOut2;

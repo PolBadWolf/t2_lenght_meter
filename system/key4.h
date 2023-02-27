@@ -5,26 +5,28 @@
 * Author: GumerovMN
 */
 
-#ifndef __PATH_H_
-#include "path.h"
-#endif
+#include "config.h"
 
+#ifdef CONF_KEY4
 #ifndef __KEY4_H__
 #define __KEY4_H__
+
+#include "path.h"
 
 #define KEY4_KEY1 1
 #define KEY4_KEY2 2
 #define KEY4_KEY3 4
 #define KEY4_KEY4 8
+
 class tc_key4
 {
-//variables
-public:
+	//variables
+	public:
 	unsigned char keyX;
-protected:
+	protected:
 	bool autoRepeat;
 	bool autoRepeatTrue;
-private:
+	private:
 	integ<unsigned char>* line1;
 	integ<unsigned char>* line2;
 	integ<unsigned char>* line3;
@@ -38,8 +40,8 @@ private:
 	unsigned char* buffer;
 	unsigned char head;
 	unsigned char tail;
-//functions
-public:
+	//functions
+	public:
 	tc_key4();
 	~tc_key4();
 	void Interrupt();
@@ -47,8 +49,8 @@ public:
 	unsigned char Read(unsigned char* key);
 	void setAutoRepeatOn();
 	void setAutoRepeatOff();
-protected:
-private:
+	protected:
+	private:
 	//tc_key4( const tc_key4 &c );
 	//tc_key4& operator=( const tc_key4 &c );
 	//void static (* const FN[][2])(unsigned char par);
@@ -59,4 +61,5 @@ private:
 	unsigned char Nbit(unsigned char dat);
 }; //key4
 
-#endif //__KEY4_H__
+#endif // __KEY4_H__
+#endif // CONF_KEY4

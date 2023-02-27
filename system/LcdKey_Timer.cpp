@@ -6,9 +6,14 @@
 */
 
 
-#include "path.h"
-#include "LcdKey_Timer.h"
-#include <avr/interrupt.h>
+#include "config.h"
+
+#ifdef CONF_TIMER_LCDKEY
+
+// #include "path.h"
+#include "../device.h"
+// #include "LcdKey_Timer.h"
+// #include <avr/interrupt.h>
 
 // timer0 - предделители 1, 8, 64, 256, 1024
 
@@ -136,7 +141,8 @@ namespace ns_LcdKeyTimer
 		TCCR0_FOC0 = 1;
 		TCNT0 = 0;
 		//uint8_t div = (((unsigned long)C_Fosc) / prDiv / FT_LcdKeyTimer) - 1;
-		uint8_t div = (uint8_t)( ((uint32_t)F_CPU) / ( ((uint32_t)prDiv) * ((uint32_t)FT_LcdKeyTimer) * ((uint32_t)1) ) ) - 1;
+//		uint8_t div = (uint8_t)( ((uint32_t)F_CPU) / ( ((uint32_t)prDiv) * ((uint32_t)FT_LcdKeyTimer) * ((uint32_t)1) ) ) - 1;
+		uint8_t div = (uint8_t)( ((uint32_t)F_CPU) / ( ((uint32_t)prDiv) * ((uint32_t)FT_LcdKeyTimer) * ((uint32_t)2) ) ) - 1;
 		OCR0 = div;
 		TIFR_OCF0 = 0;
 		TIFR_TOV0 = 0;
@@ -148,11 +154,12 @@ namespace ns_LcdKeyTimer
 
 	ISR (TIMER0_COMP_vect)
 	{
-		TIMSK_OCIE0 = 0;
-		sei();
+// 		TIMSK_OCIE0 = 0;
+// 		sei();
 		ns_device::Timer_lcd();
-		TIMSK_OCIE0 = 1;
+// 		TIMSK_OCIE0 = 1;
 	}
 
 }
 
+#endif // CONF_TIMER_LCDKEY

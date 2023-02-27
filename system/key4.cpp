@@ -6,21 +6,27 @@
 */
 #include "key4.h"
 
-typedef struct
-{
-	unsigned free:4;
-	unsigned data:4;
-} BYTE_KEY_DATA;
+#ifdef CONF_KEY4
 
 #if defined (__AVR_ATmega16__)
 #define KEY_DDR		(*((volatile BYTE_KEY_DATA*)(&DDRD))).data
 #define KEY_RD		(*((volatile BYTE_KEY_DATA*)(&PIND))).data
 #define KEY_WR		(*((volatile BYTE_KEY_DATA*)(&PORTD))).data
+typedef struct
+{
+	unsigned free:4;
+	unsigned data:4;
+} BYTE_KEY_DATA;
 #endif
 #if defined (__AVR_ATmega128__)
 #define KEY_DDR		(*((volatile BYTE_KEY_DATA*)(&DDRG))).data
 #define KEY_RD		(*((volatile BYTE_KEY_DATA*)(&PING))).data
 #define KEY_WR		(*((volatile BYTE_KEY_DATA*)(&PORTG))).data
+typedef struct
+{
+	unsigned free:4;
+	unsigned data:4;
+} BYTE_KEY_DATA;
 #endif
 
 #define TIME_LINE 20
@@ -82,9 +88,9 @@ void tc_key4::Interrupt()
 		}
 		else oldKey1 = keyX;
 	}
-// 	scr::Hex(scr::SetPosition(14, 1), autoRepeatOld);
-// 	scr::Hex(scr::SetPosition(13, 1), autoRepeat);
-// 	scr::DigitZ(scr::SetPosition(9, 1), 3, countL2);
+	// 	scr::Hex(scr::SetPosition(14, 1), autoRepeatOld);
+	// 	scr::Hex(scr::SetPosition(13, 1), autoRepeat);
+	// 	scr::DigitZ(scr::SetPosition(9, 1), 3, countL2);
 	countL1 = TIME_STAB;
 	Select();
 }
@@ -97,10 +103,10 @@ void tc_key4::Select()
 				if (!autoRepeatTrue) {
 					oldKey2 = 0;
 					autoRepeatTrue = true;
-				} else {
+					} else {
 					Push(oldKey2);
 				}
-			} else {
+				} else {
 				autoRepeatTrue = false;
 				if (countL2 <= TIME_PUSH) {
 					Push(oldKey2);
@@ -169,7 +175,7 @@ unsigned char tc_key4::InKey()
 unsigned char tc_key4::norm(unsigned char idx)
 {
 	while(idx >= KEY_BUFFER)
-		idx -= KEY_BUFFER;
+	idx -= KEY_BUFFER;
 	return idx;
 }
 
@@ -179,7 +185,7 @@ void tc_key4::Push(unsigned char dat)
 	{
 		unsigned char adr = norm(head+1);
 		if (tail == adr)
-			return;
+		return;
 		buffer[head] = dat;
 		head = adr;
 	}
@@ -214,3 +220,6 @@ unsigned char tc_key4::Read(unsigned char* key)
 void (* const tc_key4::FN[])(unsigned char par) =
 {
 };
+
+#endif // CONF_KEY4
+

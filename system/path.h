@@ -230,8 +230,9 @@ typedef void(*AdcCoreCallBack)(uint16_t measurement);
 #define CallMetod1(Type, Fn, data) ((Type)pgm_read_ptr(Fn))(data)
 #define CallMetod2(Type, Fn, indx, data) ((Type)pgm_read_ptr(Fn))(data, indx)
 //*****************************
-#include "../device.h"
+//#include "../config.h"
+//#include "../device.h"
 //#include "../Module.h"
-#include "../vg.h"
+//#include "../vg.h"
 
 #endif /* PATH_H_ */
