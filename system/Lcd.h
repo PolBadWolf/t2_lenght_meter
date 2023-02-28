@@ -31,7 +31,7 @@ protected:
 	uint16_t	scrFlashCount;		// счетчик тиков для моргания
 	bool		scrFlashStat;		// кол-во тиков для
 	uint32_t*	scrFlashPtr;
-	const uint16_t scrFlashMaxMsec = 500;
+	const uint16_t scrFlashMaxMsec = 1000;
 // функции
 protected:
 //	virtual ~Lcd();

@@ -149,16 +149,10 @@ namespace ns_device
 			SCR->DigitZ(23, 2, ss_chs);
 			SCR->DigitZ(26, 2, ss_min);
 			SCR->DigitZ(29, 2, ss_sec);
-			if (ss_count < 500)
-			{
-				SCR->PutChar(25, ':'); 
-				SCR->PutChar(28, ':');
-			}
-			else
-			{
-				SCR->PutChar(25, ' ');
-				SCR->PutChar(28, ' ');
-			}
+			SCR->flicker = true;
+			SCR->PutChar(25, ':');
+			SCR->PutChar(28, ':');
+			SCR->flicker = false;
 		}
 // 		if (--preDiv == 0)
 // 		{
