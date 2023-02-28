@@ -15,19 +15,19 @@
 //#endif
 
 #ifdef CONF_TIMER_LCDKEY
-#include "LcdKey_Timer.h"
+#include "timers/LcdKey_Timer.h"
 #endif // CONF_TIMER_LCDKEY
 
 #ifdef CONF_TIMER_MAIN
-#include "timer2.h"
+#include "timers/timer2.h"
 #endif // CONF_TIMER_MAIN
 
 #ifdef CONF_LCD
-#include "Lcd.h"
+#include "indication/Lcd.h"
 #endif // CONF_LCD
 
 #ifdef CONF_KEY4
-#include "key4.h"
+#include "keyboard/key4.h"
 #endif // CONF_KEY4
 
 // 

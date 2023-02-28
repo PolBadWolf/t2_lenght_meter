@@ -11,7 +11,7 @@
 #ifndef __KEY4_H__
 #define __KEY4_H__
 
-#include "path.h"
+#include "../path/path.h"
 
 #define KEY4_KEY1 1
 #define KEY4_KEY2 2

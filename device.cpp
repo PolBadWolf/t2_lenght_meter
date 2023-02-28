@@ -11,7 +11,7 @@
 
 
 #ifdef CONF_LCD
-#include "Lcd_hard.h"
+#include "indication/Lcd_hard.h"
 #endif // CONF_LCD
 
 //uint16_t acp_div = 0;

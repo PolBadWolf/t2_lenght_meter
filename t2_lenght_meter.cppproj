@@ -180,63 +180,74 @@
     <Compile Include="device.cpp">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="system\timer2.cpp">
+    <Compile Include="system\indication\Lcd.cpp">
       <SubType>compile</SubType>
     </Compile>
-    <None Include="system\timer2.h">
+    <Compile Include="system\indication\Lcd.h">
       <SubType>compile</SubType>
-    </None>
+    </Compile>
+    <Compile Include="system\indication\Lcd_hard.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="system\indication\Lcd_hard.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="system\keyboard\key4.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="system\keyboard\key4.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="system\menu\menu.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="system\menu\menu.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="system\timers\LcdKey_Timer.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="system\timers\LcdKey_Timer.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="system\timers\timer2.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="system\timers\timer2.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="system\path\path.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="system\path\path.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="system\path\path_mega128.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="system\path\path_mega16.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="system\path\path_user.h">
+      <SubType>compile</SubType>
+    </Compile>
     <None Include="device.h">
       <SubType>compile</SubType>
     </None>
     <Compile Include="main.cpp">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="system\key4.cpp">
-      <SubType>compile</SubType>
-    </Compile>
-    <None Include="system\key4.h">
-      <SubType>compile</SubType>
-    </None>
-    <Compile Include="system\Lcd.cpp">
-      <SubType>compile</SubType>
-    </Compile>
-    <Compile Include="system\LcdKey_Timer.cpp">
-      <SubType>compile</SubType>
-    </Compile>
-    <None Include="system\LcdKey_Timer.h">
-      <SubType>compile</SubType>
-    </None>
-    <Compile Include="system\Lcd_hard.cpp">
-      <SubType>compile</SubType>
-    </Compile>
-    <Compile Include="system\path.cpp">
-      <SubType>compile</SubType>
-    </Compile>
-    <None Include="system\path.h">
-      <SubType>compile</SubType>
-    </None>
-    <None Include="system\path_mega128.h">
-      <SubType>compile</SubType>
-    </None>
-    <None Include="system\path_mega16.h">
-      <SubType>compile</SubType>
-    </None>
-    <None Include="system\path_user.h">
-      <SubType>compile</SubType>
-    </None>
-    <None Include="system\Lcd_hard.h">
-      <SubType>compile</SubType>
-    </None>
-    <None Include="system\Lcd.h">
-      <SubType>compile</SubType>
-    </None>
     <None Include="system\config.h">
       <SubType>compile</SubType>
     </None>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="system" />
+    <Folder Include="system\keyboard" />
+    <Folder Include="system\indication" />
+    <Folder Include="system\menu" />
+    <Folder Include="system\timers" />
+    <Folder Include="system\path" />
   </ItemGroup>
   <Import Project="$(AVRSTUDIO_EXE_PATH)\\Vs\\Compiler.targets" />
 </Project>

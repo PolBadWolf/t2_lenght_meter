@@ -10,7 +10,7 @@
 
 #ifdef CONF_LCD
 
-#include "path.h"
+#include "../path/path.h"
 
 void Lcd::PutChar(uint8_t pos, char sim)
 {

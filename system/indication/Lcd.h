@@ -12,7 +12,7 @@
 #ifndef __LCD_H__
 #define __LCD_H__
 
-#include "path.h"
+#include "../path/path.h"
 
 class Lcd
 {
