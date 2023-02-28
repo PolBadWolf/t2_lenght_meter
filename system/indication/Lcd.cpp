@@ -195,4 +195,16 @@ void Lcd::ShowT1(uint8_t *pos, uint8_t c, uint8_t d, float digit)
 	}
 }
 
+uint8_t Lcd::SetPosition(uint8_t x, uint8_t y)
+{
+	uint8_t pos = (y * c_stolbcov) + x;
+	NormalizePos(&pos);
+	return pos;
+}
+
+uint8_t Lcd::GetStolbcov()
+{
+	return c_stolbcov;
+}
+
 #endif // CONF_LCD

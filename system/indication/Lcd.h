@@ -21,12 +21,11 @@ public:
 	char*		screen;				// массив копия экрана
 	uint32_t	scrFlash[2];		// массив битовая копия позиций экрана для моргания
 	volatile bool flicker;			// вывод с миганием
-//	uint32_t	scrFlashPtr_x;
+	uint8_t		pos;
 protected:
 	uint8_t		c_strok;
 	uint8_t		c_stolbcov;
 	uint8_t		maxPos;
-	uint8_t		pos;
 	uint8_t		indxRefresh;
 	uint16_t	scrFlashCount;		// счетчик тиков для моргания
 	bool		scrFlashStat;		// кол-во тиков для
@@ -68,6 +67,9 @@ public:
 	void ShowT(uint8_t  pos, uint8_t c, uint8_t d, float digit)		{ ShowT(pos, c, d, digit); }
 	void ShowT1(uint8_t *pos, uint8_t c, uint8_t d, float digit);
 	void ShowT1(uint8_t  pos, uint8_t c, uint8_t d, float digit)	{ ShowT1(pos, c, d, digit); }
+	// --
+	uint8_t SetPosition(uint8_t x, uint8_t y);
+	uint8_t GetStolbcov();
 	// --
 	virtual void Interrupt();
 }; //Lcd
