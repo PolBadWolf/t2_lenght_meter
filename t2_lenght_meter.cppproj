@@ -204,6 +204,9 @@
     <Compile Include="system\menu\menu.h">
       <SubType>compile</SubType>
     </Compile>
+    <None Include="system\menu\menu_tab_fn.h">
+      <SubType>compile</SubType>
+    </None>
     <Compile Include="system\timers\LcdKey_Timer.cpp">
       <SubType>compile</SubType>
     </Compile>
@@ -231,6 +234,12 @@
     <Compile Include="system\path\path_user.h">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="system\timers\watchdog.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <None Include="system\timers\watchdog.h">
+      <SubType>compile</SubType>
+    </None>
     <None Include="device.h">
       <SubType>compile</SubType>
     </None>

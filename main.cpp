@@ -13,6 +13,8 @@
 
 int main(void)
 {
+	ns_device::Init();
+	sei();
 #ifdef CONF_MENU
 	while (true)
 	{
@@ -21,8 +23,6 @@ int main(void)
 #endif
 #ifndef CONF_MENU
 	int16_t x_count = 0;
-	ns_device::Init();
-	sei();
 	SCR->Clear();
 	SCR->String_P((uint8_t)0, PSTR("Hello World !!!") );
 	SCR->String_P((uint8_t)25, PSTR("Мир") );
