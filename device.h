@@ -31,9 +31,9 @@
 #endif // CONF_KEY4
 
 // 
-// #if defined(CONF_MENU)
-// #include "menu.h"
-// #endif
+#ifdef CONF_MENU
+#include "menu/menu.h"
+#endif // CONF_MENU
 
 // #include "rs232.h"
 // #include "crc.h"

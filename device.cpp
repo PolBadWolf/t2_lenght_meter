@@ -13,6 +13,7 @@
 #ifdef CONF_LCD
 #include "indication/Lcd_hard.h"
 #endif // CONF_LCD
+#define SCR		ns_device::scr
 
 //uint16_t acp_div = 0;
 
@@ -95,9 +96,9 @@ namespace ns_device
 		// =====================================================
 		// меню инициировать последним, когда все объекты созданы
 
-// #if defined(CONF_MENU)
-// 		ns_menu::Init();
-// #endif
+#ifdef CONF_MENU
+ 		ns_menu::Init();
+#endif // CONF_MENU
 		// пес
 //		ns_watchdog::Init(WDTO_2S);
 	}
@@ -110,9 +111,9 @@ namespace ns_device
 #if defined(CONF_KEY4)
 		key->Interrupt();
 #endif
-// #if defined(CONF_MENU)
-// 		ns_menu::Interrupt();
-// #endif
+#ifdef CONF_MENU
+ 		ns_menu::Interrupt();
+#endif // CONF_MENU
 		// опрос переключателя режима работы (flNewSw = 1 - новые данные ; switchPos = switchMode->Status();)
 //		switchMode->Interrupt();
 //		adcCore->start();
@@ -125,6 +126,7 @@ namespace ns_device
 	uint8_t  ss_chs = 0;
 	void Timer_Usr()
 	{
+#ifndef CONF_MENU
 		bool ss_event = false;
 		if (++ss_count == 1000)
 		{
@@ -143,7 +145,6 @@ namespace ns_device
 				}
 			}
 		}
-#define SCR		ns_device::scr
 		if (ss_event)
 		{
 			SCR->DigitZ(23, 2, ss_chs);
@@ -154,6 +155,9 @@ namespace ns_device
 			SCR->PutChar(28, ':');
 			SCR->flicker = false;
 		}
+#endif // CONF_MENU
+#ifdef CONF_MENU
+#endif // CONF_MENU
 // 		if (--preDiv == 0)
 // 		{
 // 			preDiv = PREDIV_ARCHIVE;
