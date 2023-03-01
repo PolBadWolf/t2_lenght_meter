@@ -139,7 +139,7 @@ public:
 	integ()
 	{
 		count = (ST)0;
-		countMax = (ST)40;
+		countMax = (ST)20;
 		tr = tr_int = false;
 	}
 	integ(ST max)

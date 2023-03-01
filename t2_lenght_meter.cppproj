@@ -204,6 +204,21 @@
     <Compile Include="system\menu\menu.h">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="user\integ2.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="user\Sensor.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <None Include="user\Sensor.h">
+      <SubType>compile</SubType>
+    </None>
+    <Compile Include="user\Sensors.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <None Include="user\Sensors.h">
+      <SubType>compile</SubType>
+    </None>
     <None Include="system\menu\menu_tab_fn.h">
       <SubType>compile</SubType>
     </None>
@@ -251,6 +266,7 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="user" />
     <Folder Include="system" />
     <Folder Include="system\keyboard" />
     <Folder Include="system\indication" />

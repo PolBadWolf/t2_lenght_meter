@@ -13,7 +13,7 @@
 //#define CONF_LCD_24
 
 #define CONF_KEY4
-#define CONF_MENU
+// #define CONF_MENU
 
 #define CONF_TIMER_MAIN
 

@@ -100,7 +100,11 @@ namespace ns_device
  		ns_menu::Init();
 #endif // CONF_MENU
 		// пес
+#ifdef CONF_WATHDOG
 //		ns_watchdog::Init(WDTO_2S);
+#endif // CONF_WATHDOG
+		// пользовательские
+		ns_sensors::Init();
 	}
 // ========================================	
 	void Timer_lcd()

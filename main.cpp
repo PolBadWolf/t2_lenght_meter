@@ -11,8 +11,11 @@
 #define SCR ns_device::scr
 #define KEY ns_device::key
 
+#include "user/Sensors.h"
+
 int main(void)
 {
+	ns_sensors::Init();
 	ns_device::Init();
 	sei();
 #ifdef CONF_MENU

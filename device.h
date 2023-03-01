@@ -35,11 +35,16 @@
 #include "menu/menu.h"
 #endif // CONF_MENU
 
+#ifdef CONF_WATHDOG
+#include "timers/watchdog.h"
+#endif // CONF_WATHDOG
+
 // #include "rs232.h"
 // #include "crc.h"
-// #include "watchdog.h"
 // #include "vg.h"
+
 // users
+#include "user/Sensors.h"
 // #include "users\AveragingSliding.h"
 // #include "users\LoadVars.h"
 // #include "users\SwitchMode.h"
