@@ -12,12 +12,25 @@
 
 namespace ns_sensors
 {
-	extern uint32_t	time_sensors[][2];
-	extern uint8_t	s_sensorInt[];
+	extern int32_t		time_sensors[][2];
+	extern uint8_t		s_sensorInt[3];
+	extern uint8_t		statusWork;
 	//
 	void ee_load();
 	void ee_save();
 	void Init();
+	void interrupt();
+	//
+	void initIntegr();
+	void startOfDataCollection();
+	bool getStatSensor(uint8_t nSensor);
+	bool getReadyData();
+	signed int renderLenght();
+	// *******
+	bool getDebugStat();
+	void setDebugStat(bool stat);
+	void setDebugStatSensors(bool *statSensors);
+	void setDebugStatSensor(uint8_t nSensor, bool statSensor);
 	
 } //Sensors
 

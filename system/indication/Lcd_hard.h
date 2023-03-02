@@ -21,9 +21,7 @@ public:
 	// указатель записи
 	uint8_t		pos;
 protected:
-	//uint16_t	scrFlashCount;
 private:
-// 	static char* tabDecoder;
 	static const char* tabDecoder;
 
 //functions
@@ -39,7 +37,6 @@ protected:
 private:
 	Lcd_hard( const Lcd_hard &c );
 	Lcd_hard& operator=( const Lcd_hard &c );
-
 }; //Lcd_hard
 
 #endif //__LCD_HARD_H__

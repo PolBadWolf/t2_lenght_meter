@@ -7,12 +7,15 @@
 
 
 #include "Sensor.h"
+// 
+// #include "../device.h"
+// #define  SCR	ns_device::scr
 
 // default constructor
 Sensor::Sensor(unsigned char n_sensor, volatile unsigned char* ddr, volatile unsigned char* port, volatile unsigned char* s_pin, unsigned char nBit, SensorCallBack callBack)
 {
 	this->pin = s_pin; mask = 1 << (nBit & 7);
-	*ddr |= mask;	*port |= mask;
+	*ddr &= ~mask;	*port |= mask;
 	this->n_sensor = n_sensor;
 	this->callBack = *callBack;
 	count = 0;
@@ -27,13 +30,15 @@ Sensor::~Sensor()
 
 void Sensor::interrupt()
 {
-	if (*pin ^ mask)
+// 	if (n_sensor == 0)	SCR->Hex(10, *pin & mask);
+	if (*pin & mask)
 	{
 		if (count <  countMax)		count++;
 		if ((count >= countMax) && !triger)
 		{
-			count = countMax;
-			stat = triger = true;
+			count	= countMax;
+			triger	= true;
+			stat	= false;
 			if (callBack != nullptr) callBack(n_sensor, stat);
 		}
 	}
@@ -42,8 +47,9 @@ void Sensor::interrupt()
 		if (count > 0)		count--;
 		if ((count == 0) && triger)
 		{
-			count = 0;
-			stat = triger = false;
+			count	= 0;
+			triger	= false;
+			stat	= true;
 			if (callBack != nullptr) callBack(n_sensor, stat);
 		}
 	}

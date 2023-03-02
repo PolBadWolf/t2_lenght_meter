@@ -33,7 +33,7 @@ protected:
 	const uint16_t scrFlashMaxMsec = 1000;
 // функции
 protected:
-//	virtual ~Lcd();
+// 	virtual ~Lcd();
 	virtual FILE* Init(void *obj, uint8_t stolbcov)=0;
 	void NormalizePos(uint8_t *poz);
 	char Tetra(uint8_t dat);

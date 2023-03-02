@@ -25,11 +25,7 @@ namespace ns_device
 	FILE		*strmScr = nullptr;
 //	FILE		*rs232StdOut;
 	// users
-//	SwitchMode	*switchMode;
-//	Core		*core;
-//	AdcCore		*adcCore; // = new AdcCore();
-	// -
-//	uint16_t preDiv = PREDIV_ARCHIVE;
+//	
 #ifdef CONF_LCD
  	Lcd_hard *scr_vn = nullptr;
  	Lcd	*scr = nullptr;
@@ -62,8 +58,7 @@ namespace ns_device
 		ns_timerMain::Init();
 #endif // CONF_TIMER_MAIN
 
-// 		strmScr = scr::Init(16);
-		
+	
 // 		rs232StdOut = ns_rs232::Init(baud57600, DISABLE, bit8, size128, size256);
 // 		ns_rs232::String_P(PSTR(" Start programm"));
 		// ====== users ======
@@ -131,34 +126,34 @@ namespace ns_device
 	void Timer_Usr()
 	{
 #ifndef CONF_MENU
-		bool ss_event = false;
-		if (++ss_count == 1000)
-		{
-			ss_count = 0;
-			ss_event = true;
-			if (++ss_sec == 60)
-			{
-				ss_sec = 0;
-				if (++ss_min == 60)
-				{
-					ss_min = 0;
-					if (++ss_chs == 24)
-					{
-						ss_chs = 0;
-					}
-				}
-			}
-		}
-		if (ss_event)
-		{
-			SCR->DigitZ(23, 2, ss_chs);
-			SCR->DigitZ(26, 2, ss_min);
-			SCR->DigitZ(29, 2, ss_sec);
-			SCR->flicker = true;
-			SCR->PutChar(25, ':');
-			SCR->PutChar(28, ':');
-			SCR->flicker = false;
-		}
+// 		bool ss_event = false;
+// 		if (++ss_count == 1000)
+// 		{
+// 			ss_count = 0;
+// 			ss_event = true;
+// 			if (++ss_sec == 60)
+// 			{
+// 				ss_sec = 0;
+// 				if (++ss_min == 60)
+// 				{
+// 					ss_min = 0;
+// 					if (++ss_chs == 24)
+// 					{
+// 						ss_chs = 0;
+// 					}
+// 				}
+// 			}
+// 		}
+// 		if (ss_event)
+// 		{
+// 			SCR->DigitZ(23, 2, ss_chs);
+// 			SCR->DigitZ(26, 2, ss_min);
+// 			SCR->DigitZ(29, 2, ss_sec);
+// 			SCR->flicker = true;
+// 			SCR->PutChar(25, ':');
+// 			SCR->PutChar(28, ':');
+// 			SCR->flicker = false;
+// 		}
 #endif // CONF_MENU
 #ifdef CONF_MENU
 #endif // CONF_MENU
@@ -170,6 +165,8 @@ namespace ns_device
 // 		}
 		// счет прерываний (тиков) за измерение
 //		ns_ModeWorks::InterruptTick();
+		// 
+		ns_sensors::interrupt();
 	}
 	void MainCicle()
 	{
