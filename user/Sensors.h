@@ -20,18 +20,19 @@ namespace ns_sensors
 	void ee_save();
 	void Init();
 	void interrupt();
+	unsigned char getStatusWork();
 	//
 	void initIntegr();
 	void startOfDataCollection();
 	bool getStatSensor(uint8_t nSensor);
-	bool getReadyData();
-	signed int renderLenght();
+	int	 getReadyData();
+	int renderLenght();
 	// *******
 	bool getDebugStat();
 	void setDebugStat(bool stat);
 	void setDebugStatSensors(bool *statSensors);
 	void setDebugStatSensor(uint8_t nSensor, bool statSensor);
-	
+	void mainCicle();
 } //Sensors
 
 #endif //__SENSORS_H__

@@ -13,9 +13,16 @@
 
 #include "user/Sensors.h"
 
+#define STECK_TUBE ns_device::steckTube
+
 int main(void)
 {
-	ns_sensors::Init();
+	// ====================
+// 	StekTube *steck = new StekTube(3);
+// 	StekTube::newTube(5500);
+// 	int xn = steck->getCountSteck();
+// 	unsigned int len = steck->getLenghtTube(xn);
+	// ====================
 	ns_device::Init();
 	sei();
 #ifdef CONF_MENU
@@ -57,31 +64,92 @@ int main(void)
 	ns_sensors::setDebugStat(false);
 	uint8_t count_ind = 0;
 	__delay_ms(1000);
-	ns_sensors::startOfDataCollection();
+	if (ns_sensors::getStatusWork() != 0)
+	{
+		ns_sensors::startOfDataCollection();
+	}
+// 	ns_sensors::startOfDataCollection();
+	STECK_TUBE->tubes[0].lenght = 11;
+	STECK_TUBE->tubes[1].lenght = 22;
+	STECK_TUBE->tubes[2].lenght = 33;
 	while(true)
 	{
 		if (++count_ind == 5)
 		{
 			count_ind = 0;
-			if (ns_sensors::getDebugStat())			SCR->PutChar((uint8_t)0, 'D');
-			else									SCR->PutChar((uint8_t)0, 'O');
-			for (uint8_t i = 0; i < 3; i++)
-			{
-				if (ns_sensors::getStatSensor(i))	SCR->PutChar(1 + i, '1');
-				else								SCR->PutChar(1 + i, '0');
-			}
-			if (ns_sensors::getReadyData())			SCR->PutChar(4, 'R');
-			else									SCR->PutChar(4, 'I');
+			
+// 			if (ns_sensors::getDebugStat())			SCR->PutChar((uint8_t)0, 'D');
+// 			else									SCR->PutChar((uint8_t)0, 'O');
+// 			for (uint8_t i = 0; i < 3; i++)
+// 			{
+// 				if (ns_sensors::getStatSensor(i))	SCR->PutChar(1 + i, '1');
+// 				else								SCR->PutChar(1 + i, '0');
+// 			}
+// 			if (ns_sensors::getReadyData())			SCR->PutChar(4, 'R');
+// 			else									SCR->PutChar(4, 'I');
+
+
 			//
+// 			{
+// 				uint8_t statusWork = ns_sensors::statusWork;
+//  				SCR->Hex(25, statusWork);
+// 				char sim;
+// 				for (uint8_t i = 0; i < 6; i++)
+// 				{
+// 					if (statusWork & (1 << i))	sim = '1'; else sim = '0';
+// 					SCR->PutChar(16 + i, sim);
+// 				}
+// 			}
+			// ==
+			//ns_sensors::mainCicle();
+// 			{
+// 				switch (ns_sensors::getReadyData())
+// 				{
+// 					case 0:
+// 						// нет готовности
+// 						break;
+// 					case -1:
+// 						SCR->Clear();
+// 						SCR->DigitM(16, 4, ns_sensors::time_sensors[0][1]);
+// 						SCR->DigitM(21, 4, ns_sensors::time_sensors[1][1]);
+// 						SCR->DigitM(26, 4, ns_sensors::time_sensors[2][1]);
+// 						SCR->String_P(PSTR("ERROR "));
+// 						ns_sensors::startOfDataCollection();
+// 						break;
+// 					default:
+// 						int x = ns_sensors::renderLenght();
+// 						SCR->Clear();
+// 						SCR->DigitM(6, 6, x);
+// 						ns_sensors::startOfDataCollection();
+// 						SCR->DigitZ(16, 3, ns_device::steckTube->getCountSteck());
+// 						break;
+// 				}
+// 			}
 			{
-				uint8_t statusWork = ns_sensors::statusWork;
-				char sim;
-				for (uint8_t i = 0; i < 8; i++)
+				ns_device::MainCicle();
+				switch (ns_device::core->getStat())
 				{
-					if (statusWork & (1 << i))	sim = '1'; else sim = '0';
-					SCR->PutChar(16 + i, sim);
+					case CORESTAT_ERROR:
+// 						SCR->Clear();
+// 						SCR->String_P((uint8_t)0, PSTR("Ошибка"));
+						ns_device::core->resetStat();
+						break;
+					case CORESTAT_OK:
+ 						SCR->Clear();
+						SCR->DigitZ((uint8_t)0, 5, ns_device::core->getCurrentLenghtTube());
+						SCR->DigitZ(8, 1, STECK_TUBE->getCountSteck());
+						ns_device::core->resetStat();
+// 						SCR->DigitM( 8, 6, STECK_TUBE->getLenghtTube(STECK_TUBE->getCountSteck()-1));
+// 						SCR->DigitM(24, 6, STECK_TUBE->getLenghtTube(STECK_TUBE->getCountSteck()-0));
+						SCR->DigitZ(16, 5, STECK_TUBE->tubes[0].lenght);
+						SCR->DigitZ(21, 5, STECK_TUBE->tubes[1].lenght);
+						SCR->DigitZ(26, 5, STECK_TUBE->tubes[2].lenght);
+ 						SCR->DigitZ(10, 5, STECK_TUBE->getLenghtTube(STECK_TUBE->getCountSteck()));
+						break;
+						
 				}
 			}
+			
 		}
 	}
 #endif

@@ -9,6 +9,11 @@
 //#include "path.h"
 #include "device.h"
 
+// ---пользовательское
+// #include "user/Core.h"
+// #include "user/StekTube.h"
+// ------------------
+
 
 #ifdef CONF_LCD
 #include "indication/Lcd_hard.h"
@@ -33,6 +38,10 @@ namespace ns_device
 #ifdef CONF_KEY4
 	tc_key4		*key;
 #endif // CONF_KEY4
+
+	// Core
+	Core	*core;
+	StekTube *steckTube;
 
 	void Init()
 	{
@@ -100,6 +109,8 @@ namespace ns_device
 #endif // CONF_WATHDOG
 		// пользовательские
 		ns_sensors::Init();
+		steckTube = new StekTube(3);
+		core = new Core(steckTube->newTube);
 	}
 // ========================================	
 	void Timer_lcd()
@@ -168,6 +179,7 @@ namespace ns_device
 		// 
 		ns_sensors::interrupt();
 	}
+// ======================= ******************** ==================
 	void MainCicle()
 	{
 #ifdef CONF_MENU
@@ -176,5 +188,7 @@ namespace ns_device
 		// заглушка
 // 		switchMode->MainCicle();
 // 		ns_watchdog::ResetCount();
+		ns_sensors::mainCicle();
+		core->mainCycle();
 	}
 }

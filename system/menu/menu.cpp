@@ -90,7 +90,6 @@ namespace ns_menu
 		FnMenu(MODE_MAIN, MENU_SETMODE);
 	}
 	void Main() {
-		//scr->DigitZ(scr->SetPosition(0,0), 3, 125);
 		uint8_t keyStat = key4->Read(&key);
 		uint16_t to;
 		CRITICAL_SECTION { to = timeOut; }

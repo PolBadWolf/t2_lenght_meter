@@ -45,6 +45,10 @@
 
 // users
 #include "user/Sensors.h"
+// ---пользовательское
+#include "user/Core.h"
+#include "user/StekTube.h"
+// ------------------
 // #include "users\AveragingSliding.h"
 // #include "users\LoadVars.h"
 // #include "users\SwitchMode.h"
@@ -84,6 +88,12 @@ namespace ns_device
 //	extern Core			*core;
 	
 //	extern AdcCore* adcCore;
+
+// ======================
+	// Core
+	extern Core	*core;
+	extern StekTube *steckTube;
+// ======================
 
 	void Init();
 	void Timer_lcd();
