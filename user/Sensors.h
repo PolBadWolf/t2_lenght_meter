@@ -15,6 +15,7 @@ namespace ns_sensors
 	extern int32_t		time_sensors[][2];
 	extern uint8_t		s_sensorInt[3];
 	extern uint8_t		statusWork;
+	extern bool			*sensorMass[3];
 	//
 	void ee_load();
 	void ee_save();

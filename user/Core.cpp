@@ -15,6 +15,7 @@ Core::Core(NewTubeCallBack newTubeCallBack)
 {
 	this->newTubeCallBack = newTubeCallBack;
 	ns_sensors::startOfDataCollection();
+	count99 = 0;
 } //Core
 
 // default destructor
@@ -52,7 +53,9 @@ void Core::mainCycle()
 	}
 	stat = CORESTAT_OK;
 	currentLenghtTube = lenghtTube;
-	newTubeCallBack(lenghtTube);
+	if (++count99 > 99)		count99 = 1;
+	if (count99 < 1)		count99 = 1;
+	newTubeCallBack(lenghtTube, count99);
 	// следущй цикл
 	ns_sensors::startOfDataCollection();
 }
@@ -70,4 +73,9 @@ void Core::resetStat()
 unsigned int Core::getCurrentLenghtTube()
 {
 	return currentLenghtTube;
+}
+
+unsigned char Core::getCurrentCount()
+{
+	return count99;
 }

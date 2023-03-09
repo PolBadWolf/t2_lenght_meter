@@ -25,31 +25,40 @@ StekTube::StekTube(unsigned char nTubes)
 // {
 // } //~StekTube
 
-void StekTube::newTubeLocal(unsigned int lenghtTube)
+void StekTube::newTubeLocal(unsigned int lenghtTube, unsigned char count)
 {
 	// сдвиг
 	tubes[countTubesCycle].lenght = lenghtTube;
-	if (++countTubesCycle == countTubesMax)		countTubesCycle = 0;
+	tubes[countTubesCycle].n = count;
+	if (++countTubesCycle >= countTubesMax)		countTubesCycle = 0;
 	if (countTubes < countTubesMax)		countTubes++;
 }
 
-signed int StekTube::getLenghtTube(unsigned char nTube)
+StekTubeUnit StekTube::getLenghtTube(signed char nTube)
 {
-	if (nTube > countTubes)		return -1;
-	unsigned char i;
-// 	i = nTube + countTubesCycle - 1;
-	i = nTube  - 1;
-	if (i >= countTubesMax)		i -= countTubesMax;
-	return	tubes[i].lenght;
+	// нормализация
+	while (nTube < 0)		nTube += countTubesMax;
+	while (nTube >= countTubesMax)	nTube -= countTubesMax;
+ 	return	*(new StekTubeUnit(tubes[nTube]));
 }
 
-void StekTube::newTube(unsigned int lenghtTube)
+void StekTube::newTube(unsigned int lenghtTube, unsigned char count)
 {
-	obj->newTubeLocal(lenghtTube);
+	obj->newTubeLocal(lenghtTube, count);
 }
 
-unsigned char StekTube::getCountSteck()
+unsigned char StekTube::getCountSteckFull()
 {
 	unsigned char nt = countTubes;
 	return nt;
+}
+
+unsigned char StekTube::getCountSteckCurrent()
+{
+	return countTubesCycle;
+}
+
+unsigned char StekTube::getCountSteckMax()
+{
+	return countTubesMax;
 }

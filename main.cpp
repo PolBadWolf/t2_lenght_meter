@@ -12,11 +12,21 @@
 #define KEY ns_device::key
 
 #include "user/Sensors.h"
-
 #define STECK_TUBE ns_device::steckTube
+
+#include "DeB.h" // ***********
+
+signed char normX(signed char x, signed char min, signed char max)
+{
+	while (x < min)		x += max;
+	while (x >= max)	x -= max;
+	return x;
+}
 
 int main(void)
 {
+	DeB *deb =  new DeB();
+	deb->main();
 	// ====================
 // 	StekTube *steck = new StekTube(3);
 // 	StekTube::newTube(5500);
@@ -137,16 +147,55 @@ int main(void)
 					case CORESTAT_OK:
  						SCR->Clear();
 						SCR->DigitZ((uint8_t)0, 5, ns_device::core->getCurrentLenghtTube());
-						SCR->DigitZ(8, 1, STECK_TUBE->getCountSteck());
+//						SCR->DigitZ(8, 1, STECK_TUBE->getCountSteck());
 						ns_device::core->resetStat();
 // 						SCR->DigitM( 8, 6, STECK_TUBE->getLenghtTube(STECK_TUBE->getCountSteck()-1));
 // 						SCR->DigitM(24, 6, STECK_TUBE->getLenghtTube(STECK_TUBE->getCountSteck()-0));
-						SCR->DigitZ(16, 5, STECK_TUBE->tubes[0].lenght);
-						SCR->DigitZ(21, 5, STECK_TUBE->tubes[1].lenght);
-						SCR->DigitZ(26, 5, STECK_TUBE->tubes[2].lenght);
- 						SCR->DigitZ(10, 5, STECK_TUBE->getLenghtTube(STECK_TUBE->getCountSteck()));
+// 						SCR->DigitZ(16, 5, STECK_TUBE->tubes[0].lenght);
+// 						SCR->DigitZ(21, 5, STECK_TUBE->tubes[1].lenght);
+// 						SCR->DigitZ(26, 5, STECK_TUBE->tubes[2].lenght);
+// 						{
+// 							StekTubeUnit unit = STECK_TUBE->getLenghtTube(STECK_TUBE->getCountSteck());
+//  							SCR->DigitZ(10, 5, unit.lenght);
+// 						}
+						{
+// 							signed char max = STECK_TUBE->getCountSteckMax() - 1;
+ 							signed char x;
+							
+// 							x = normX(STECK_TUBE->getCountSteckCurrent() - 0, 0, max);
+							x = STECK_TUBE->getCountSteckCurrent();
+							SCR->DigitM(16, 3, x);
+							StekTubeUnit unit;
+							unit = STECK_TUBE->getLenghtTube(x - 2);
+							if (unit.n > 0 && unit.n < 100)
+							{
+ 								SCR->DigitM( 7, 2, unit.n);
+ 								SCR->DigitM(10, 5, unit.lenght);
+							}
+ 							unit = STECK_TUBE->getLenghtTube(x - 1);
+							if (unit.n > 0 && unit.n < 100)
+							{
+  								SCR->DigitM(23, 2, unit.n);
+  								SCR->DigitM(26, 5, unit.lenght);
+							}
+							
+// 							// массив номеров
+// 							SCR->DigitZ(16, 2, STECK_TUBE->tubes[0].n);
+// 							SCR->DigitZ(19, 2, STECK_TUBE->tubes[1].n);
+// 							SCR->DigitZ(22, 2, STECK_TUBE->tubes[2].n);
+// 							// текущий(на самом деле следующий) номер
+// 							x = STECK_TUBE->getCountSteckCurrent();
+// 							SCR->DigitZ(25, 2, x);
+// 							// чтение из текущего номера
+// 							y = STECK_TUBE->getLenghtTube(x - 1).n;
+// 							SCR->DigitZ(28, 2, y);
+						}
 						break;
-						
+					default:
+// 						SCR->PutChar(16, ((*ns_sensors::sensorMass[0]) ? 1 : 0) );
+// 						SCR->PutChar(17, ((*ns_sensors::sensorMass[1]) ? 1 : 0) );
+// 						SCR->PutChar(18, ((*ns_sensors::sensorMass[2]) ? 1 : 0) );
+						break;
 				}
 			}
 			

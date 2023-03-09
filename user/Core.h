@@ -13,7 +13,7 @@
 #define CORESTAT_ERROR	1
 #define CORESTAT_OK		2
 
-typedef void(*NewTubeCallBack)(unsigned int lenghtTube);
+typedef void(*NewTubeCallBack)(unsigned int lenghtTube, unsigned char count);
 
 class Core
 {
@@ -23,16 +23,18 @@ protected:
 	signed char		stat;
 	NewTubeCallBack	newTubeCallBack;
 	unsigned int	currentLenghtTube;
+	unsigned char	count99;
 private:
 
 //functions
 public:
 	Core(NewTubeCallBack newTubeCallBack);
 //	~Core();
-	void	mainCycle();
-	signed char	getStat();
-	void	resetStat();
-	unsigned int getCurrentLenghtTube();
+	void			mainCycle();
+	signed char		getStat();
+	void			resetStat();
+	unsigned int	getCurrentLenghtTube();
+	unsigned char	getCurrentCount();
 protected:
 private:
 	Core( const Core &c );

@@ -65,6 +65,11 @@ const char tabDecoder_local[] PROGMEM  =
 };
 const char* Lcd_hard::tabDecoder = (char*)tabDecoder_local;
 
+const uint8_t symbol_work[16] PROGMEM =
+{	0x06, 0x09, 0x09, 0x06, 0x00, 0x00, 0x00, 0x00,
+	0x06, 0x0f, 0x0f, 0x06, 0x00, 0x00, 0x00, 0x00 };
+
+
 // default constructor
 Lcd_hard *thisObj = nullptr;
 Lcd_hard::Lcd_hard()
@@ -125,8 +130,18 @@ FILE* Lcd_hard::Init(void *obj, uint8_t stolbcov)
 	__delay_ms(2);
 	SendCommand(0x80);					//
 	__delay_ms(2);
-	// загрузка символов
-	//
+	// ================================
+	// load simbols
+	SendCommand(0x40);
+	__delay_ms(1);
+	for (unsigned char i=0;i<16;i++)
+	{
+		SendData(pgm_read_byte(&symbol_work[i]));
+		__delay_us(15);
+	}
+	SendCommand(0x80);
+	__delay_ms(1);
+	// ================================
 	thisObj = (Lcd_hard *)obj;
 	return fdevopen(putCharX, NULL);
 }
