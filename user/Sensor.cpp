@@ -20,7 +20,16 @@ Sensor::Sensor(unsigned char n_sensor, volatile unsigned char* ddr, volatile uns
 	this->callBack = *callBack;
 	count = 0;
 	countMax = 20;
-	triger = stat = false;
+	if (*pin & mask)
+	{
+		triger = true;
+		stat = false;
+	}
+	else
+	{
+		triger = false;
+		stat = true;
+	}
 } //Sensor
 
 // default destructor
@@ -30,7 +39,6 @@ Sensor::~Sensor()
 
 void Sensor::interrupt()
 {
-// 	if (n_sensor == 0)	SCR->Hex(10, *pin & mask);
 	if (*pin & mask)
 	{
 		if (count <  countMax)		count++;

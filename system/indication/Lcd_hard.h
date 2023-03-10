@@ -21,6 +21,7 @@ public:
 	// указатель записи
 	uint8_t		pos;
 protected:
+	uint8_t		blockRestart;
 private:
 	static const char* tabDecoder;
 

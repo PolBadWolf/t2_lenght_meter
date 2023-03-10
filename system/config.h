@@ -13,11 +13,13 @@
 //#define CONF_LCD_24
 
 #define CONF_KEY4
-// #define CONF_MENU
+#define CONF_MENU
 
 #define CONF_TIMER_MAIN
 
 #define CONF_WATHDOG
+
+//#define CONF_RS232
 // 
 // #if !defined(CONF_LCD) or !defined(CONF_KEY4)
 // #undef CONF_MENU

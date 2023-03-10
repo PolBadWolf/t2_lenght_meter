@@ -8,6 +8,7 @@
 #include "config.h"
 //#include "path.h"
 #include "device.h"
+#include "communication/rs232.h"
 
 // ---пользовательское
 // #include "user/Core.h"
@@ -28,7 +29,7 @@ int xxx_c = 2;
 namespace ns_device
 {
 	FILE		*strmScr = nullptr;
-//	FILE		*rs232StdOut;
+	FILE		*rs232StdOut = nullptr;
 	// users
 //	
 #ifdef CONF_LCD
@@ -59,6 +60,11 @@ namespace ns_device
  		key = new tc_key4;
 #endif
 
+#ifdef CONF_RS232
+	rs232StdOut = ns_rs232::Init(baud57600, DISABLE, bit8, size32, size64);
+ 	ns_rs232::String_P(PSTR(" Start programm\n"));
+#endif // CONF_RS232
+
 #ifdef CONF_TIMER_LCDKEY
  		ns_LcdKeyTimer::Init();
 #endif // CONF_TIMER_LCDKEY
@@ -68,7 +74,6 @@ namespace ns_device
 #endif // CONF_TIMER_MAIN
 
 	
-// 		rs232StdOut = ns_rs232::Init(baud57600, DISABLE, bit8, size128, size256);
 // 		ns_rs232::String_P(PSTR(" Start programm"));
 		// ====== users ======
 		// переключатель режима
@@ -109,8 +114,15 @@ namespace ns_device
 #endif // CONF_WATHDOG
 		// пользовательские
 		ns_sensors::Init();
-		steckTube = new StekTube(3);
-		core = new Core(steckTube->newTube);
+		steckTube = new StekTube(5);
+		{
+			ns_device::steckTube->newTube( 9300, 1);
+			ns_device::steckTube->newTube(11825, 2);
+			ns_device::steckTube->newTube(10786, 3);
+			ns_device::steckTube->newTube(10252, 4);
+			ns_device::steckTube->newTube(10988, 5);
+		}
+		core = new Core(StekTube::newTube);
 	}
 // ========================================	
 	void Timer_lcd()

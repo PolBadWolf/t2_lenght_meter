@@ -19,10 +19,13 @@ void Lcd::PutChar(uint8_t pos, char sim)
 
 void Lcd::FlashFn(uint8_t *pos, volatile bool *onOff)
 {
-	if (*onOff)
-		scrFlash[(*pos)/c_stolbcov] |=  (((uint32_t)1) << ((*pos)%c_stolbcov));
-	else
-		scrFlash[(*pos)/c_stolbcov] &= ~(((uint32_t)1) << ((*pos)%c_stolbcov));
+	CRITICAL_SECTION
+	{
+		if (*onOff)
+			scrFlash[(*pos)/c_stolbcov] |=  (((uint32_t)1) << ((*pos)%c_stolbcov));
+		else
+			scrFlash[(*pos)/c_stolbcov] &= ~(((uint32_t)1) << ((*pos)%c_stolbcov));
+	}
 }
 
 void Lcd::NormalizePos(uint8_t *poz)

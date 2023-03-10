@@ -15,7 +15,7 @@ Core::Core(NewTubeCallBack newTubeCallBack)
 {
 	this->newTubeCallBack = newTubeCallBack;
 	ns_sensors::startOfDataCollection();
-	count99 = 0;
+	count99 = ns_device::steckTube->getLenghtTube(ns_device::steckTube->getCountSteckCurrent() - 1).n;
 } //Core
 
 // default destructor
@@ -37,14 +37,20 @@ void Core::mainCycle()
 			// ошибка работы сенсоров
 			ns_device::scr->PutChar(15, 'S');
 			break;
+		case -2:
+			// заблокирована работа измерителя
+			ns_device::scr->PutChar(15, 'B');
+			lenghtTube = -2;
+			break;
 		default:
 			// расчет и сохранение измеренной длины
 			lenghtTube = ns_sensors::renderLenght();
 			break;
 	}
+	newData = 0xff;
 	if (lenghtTube < 0)
 	{
-		ns_device::scr->DigitM(24, 6, lenghtTube);
+// 		ns_device::scr->DigitM(24, 6, lenghtTube);
 		// если ошибка работы сенсоров
 		stat = CORESTAT_ERROR;
 		// следущй цикл

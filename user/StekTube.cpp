@@ -34,12 +34,17 @@ void StekTube::newTubeLocal(unsigned int lenghtTube, unsigned char count)
 	if (countTubes < countTubesMax)		countTubes++;
 }
 
-StekTubeUnit StekTube::getLenghtTube(signed char nTube)
+signed char StekTube::normIndxMass(signed char n)
 {
 	// нормализация
-	while (nTube < 0)		nTube += countTubesMax;
-	while (nTube >= countTubesMax)	nTube -= countTubesMax;
- 	return	*(new StekTubeUnit(tubes[nTube]));
+	while (n < 0)		n += countTubesMax;
+	while (n >= countTubesMax)	n -= countTubesMax;
+	return n;
+}
+
+StekTubeUnit StekTube::getLenghtTube(signed char nTube)
+{
+ 	return	tubes[normIndxMass(nTube)];
 }
 
 void StekTube::newTube(unsigned int lenghtTube, unsigned char count)

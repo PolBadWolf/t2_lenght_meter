@@ -20,6 +20,7 @@ DeB::~DeB()
 
 void DeB::main()
 {
+/*
 	StekTube *steck = new StekTube(3);
 	
 	steck->tubes[0] = *(new StekTubeUnit(11, 7));
@@ -48,4 +49,5 @@ void DeB::main()
 	x = steck->getCountSteckCurrent();
 	steck->newTube(11508, 8);
 	x = steck->getCountSteckCurrent();
+*/
 }

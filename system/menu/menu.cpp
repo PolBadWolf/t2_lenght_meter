@@ -12,15 +12,19 @@
 #include <avr/pgmspace.h>
 #include <math.h>
 #include "../device.h"
+#include "MenuEdit_Uint8T.h"
 
 #define  key4	ns_device::key
 #define  scr	ns_device::scr
+#define  steck	ns_device::steckTube
 
 namespace ns_menu
 {
 	uint8_t		mode = 0;
 	uint16_t	timeOut = 0;
 	uint8_t		flReboot = 0;
+	//
+	bool		fistView;
 	// заглушка
 	void Dupm() {}
 	#define MENU_VIEW			0		// 0 : no key (view)
@@ -31,6 +35,8 @@ namespace ns_menu
 	#define MENU_MULTIKEY		5		// 5 : multi key
 	#define MENU_SETMODE		6		// 6 : set mode
 	#define MENU_TIMEOUT		7		// 7 : timeout
+	// ------------
+	MenuEdit_Uint8T		mEdit_Uint8T;
 	// ==================================================
 	// ******** массив функций меню *********************
 	typedef void(*TyFnMn)();
@@ -38,28 +44,18 @@ namespace ns_menu
 	#define FnMenu(mode, stat) ((TyFnMn)pgm_read_ptr(& MassFnMn[mode][stat]))()
 	// ==================================================
 	// *********** режимы меню **************************
-	#define MODE_MAIN				0				// главный экран
-	#define MODE_ENTER_PASS			1				// ввод пароля
-	#define MODE_TIMEOUT_TO_MAIN	2				// delay, go main
-	#define MODE_TIMEOUT_TO_MENU	3				// delay, go menu
-	#define MODE_SELECT_PARAM		4				// выбор параметра в меню
-	#define MODE_EDIT_MSEC_U8		5				// редактирование параметров в мСек uint8_t
-	#define MODE_EDIT_MSEC_U16		6				// редактирование параметров в мСек uint16_t
-	#define MODE_EDIT_UMSEC_U16		7				// редактирование параметров в unit/mSec  uint16_t
-	#define MODE_EDIT_UNIT_U8		8				// редактирование параметров в разах uint8_t
-	#define MODE_REBOOT				9				// перезагрузка
-	#define MODE_SET_PASS			10				// установка пароля
-	#define MODE_TIMEOUT			11
-	// ==================================================
-	#define TIMEOUT_ENTER_PASS		30000
-	#define TIMEOUT_EDIT			30000
+#include "menu_mode.h"
 	// ==================================================
 	uint8_t key;
 	// ==================================================
 	// для редактирование uint8
-	uint8_t editU8_dat, editU8_min, editU8_max;
+	uint8_t editUint8T_dat, editUint8T_min, editUint8T_max;
+	typedef void(*CallBackEndEdit_u8)(uint8_t dat);
+	CallBackEndEdit_u8		endEdit_u8 = nullptr;
+	
 	// для редактирование int8
 	uint8_t editS8_dat, editS8_min, editS8_max;
+	
 	// для редактирование uint16
 	uint16_t editU16_dat, editU16_min, editU16_max;
 	// для редактирование int16
@@ -123,6 +119,8 @@ namespace ns_menu
 	//
 	uint8_t fl_cal = 0;
 	uint8_t fl_alarm = 0;
+
+	// ====================== 1 Главный экран =========================
 	void Main_SetMode()
 	{
 		mode = MODE_MAIN;				// пункт меню
@@ -130,91 +128,15 @@ namespace ns_menu
 		CRITICAL_SECTION { timeOut = 0; }
 		key4->setAutoRepeatOff();		// отключить быстрый повтор кнопок
 		// статическая часть экрана
+		scr->flicker = false;
 		scr->Clear();
-		scr->String_P( scr->SetPosition( 0, 0) , PSTR("Дист.") );
-		scr->String_P( scr->SetPosition( 6, 0) , PSTR("Усл.") );
-		scr->String_P( scr->SetPosition( 11, 0) , PSTR("Скр.") );
-		fl_cal = 0;
-		fl_alarm = 0;
+		fistView = true;
 	}
-	uint16_t peekSpeedMass[8];
-	uint8_t  peekSpeedIndex = 0;
-	uint8_t  peekSpeedCount = 0;
-	uint16_t peekSpeed(uint16_t source) {
-		if (peekSpeedMass[peekSpeedIndex] < source) peekSpeedMass[peekSpeedIndex] = source;
-		uint16_t max = peekSpeedMass[0];
-		for (uint8_t i = 1; i < 8; i++) {
-			if (max < peekSpeedMass[i]) max = peekSpeedMass[i];
-		}
-		//--
-		if (++peekSpeedCount >= 200) {
-			peekSpeedCount = 0;
-			if (++peekSpeedIndex >= 8) peekSpeedIndex = 0;
-			peekSpeedMass[peekSpeedIndex] = 0;
-		}
-		// --
-		return max;
-	}
-	void showCalibre() {
-// 		if (ns_ModeWorks::flag_calibrovka != 0) {
-// 			// калибровка
-// 			scr->String_P( scr->SetPosition( 0, 0) , PSTR("   КАЛИБРОВКА   ") );
-// 			fl_cal = 1;
-// 			} else {
-// 			if (fl_cal != 0) {
-// 				fl_cal = 0;
-// 				Main_SetMode();
-// 			}
-// 		}
-	}
-	void showWorkMode() {
-// 		char dw[3], *dwa = dw;
-// 		switch (ns_ModeWorks::mode) {
-// 			case WMODE_M_STOP:
-// 				dwa = "ST";
-// 				break;
-// 			case WMODE_C_DELAY:
-// 				dwa = "DL";
-// 				break;
-// 			case WMODE_M_PUSK:
-// 			case WMODE_C_PUSK:
-// 				dwa = "FW";
-// 				break;
-// 			case WMODE_M_SHELF:
-// 			case WMODE_C_SHELF:
-// 			dwa = "SH";
-// 			break;
-// 			case WMODE_M_BACK:
-// 			case WMODE_C_BACK:
-// 			dwa = "BC";
-// 			break;
-// 			default:
-// 				dwa = "  ";
-// 		}
-// 		scr->String(scr->SetPosition(14, 1), dwa);
-	}
-	void showAlarm(uint16_t peek_speed) {
-// 		if (ns_ModeWorks::mode == WMODE_M_ALARM) {
-// 			if (fl_alarm == 0) {
-// 				scr->String_P( scr->SetPosition( 11, 0), PSTR("ALARM") );
-// 				scr->String_P( scr->SetPosition( 10, 1), PSTR("ERR:") );
-// 				scr->DigitZ(   scr->SetPosition( 14, 1), 2, ns_ModeWorks::alarmCode);
-// 				fl_alarm = 1;
-// 			}
-// 			} else {
-// 			if (fl_alarm != 0) {
-// 				scr->String_P( scr->SetPosition( 11, 0) , PSTR("Скр. ") );
-// 				scr->String_P( scr->SetPosition( 10, 1), PSTR("      ") );
-// 				fl_alarm = 0;
-// 			}
-// 			scr->Digit(    scr->SetPosition(10, 1), 3, peek_speed);
-// 			showWorkMode();
-// 		}
-	}
+	// ------------------------------------------------------
 	void detectedReboot() {
 		if (flReboot != 0) {
 			while (true) {
-				printf_P(PSTR("REBOOT "));
+//				printf_P(PSTR("REBOOT "));
 				__delay_ms(200);
 			}
 		}
@@ -222,20 +144,159 @@ namespace ns_menu
 	
 	void Main_View()
 	{
-		
-// 		uint16_t peek_speed = peekSpeed(ns_ModeWorks::speedMoveStock);
-// 		showCalibre();
-// 		showAlarm(peek_speed);
-//  		scr->Digit (scr->SetPosition(0, 1), 4, ns_device::adcCore->getDistance());
-//  		scr->Digit (scr->SetPosition(5, 1), 4, ns_device::core->getForce());
 // 		detectedReboot();
+		// ************ длина из стека **********************
+		// текущая позитция в стеке
+		scr->flicker = false;
+		// ---
+		if ((ns_device::core->newData & (1 << 0)) || fistView)
+		{
+			ns_device::core->newData &= ~(1 << 0);
+			fistView = false;
+			// --
+			int8_t steckIndx = steck->normIndxMass(steck->getCountSteckCurrent() - 1);
+			StekTubeUnit unit;
+			unit = steck->getLenghtTube(steckIndx - 1);
+			if (unit.n > 0 && unit.n < 100)
+			{
+				scr->Digit ( 7, 2, unit.n);
+				scr->DigitZ(10, 5, unit.lenght);
+			}
+			unit = steck->getLenghtTube(steckIndx);
+			if (unit.n > 0 && unit.n < 100)
+			{
+				scr->Digit (23, 2, unit.n);
+				scr->DigitZ(26, 5, unit.lenght);
+			}
+		}
+		// ************** датчики **************************
+		scr->PutChar(16, ((*ns_sensors::sensorMass[0]) ? 1 : 0) );
+		scr->PutChar(17, ((*ns_sensors::sensorMass[1]) ? 1 : 0) );
+		scr->PutChar(18, ((*ns_sensors::sensorMass[2]) ? 1 : 0) );
+		scr->PutChar(19, (( ns_sensors::blockirovka)   ? 1 : 0) );
+		// ************** счетчик *********************
+		scr->DigitZ((uint8_t)0, 5, ns_sensors::v_count);
 	}
 	void Main_menu()
 	{
 		//FnMenu(MODE_ENTER_PASS, MENU_SETMODE);
-		FnMenu(MODE_SELECT_PARAM, MENU_SETMODE); // обход ввода пароля
+// 		FnMenu(MODE_SELECT_PARAM, MENU_SETMODE); // обход ввода пароля
+		FnMenu(MODE_SELECT_SCR, MENU_SETMODE);
 	}
-	// =======================================================================
+	// ====================== 2 Выбор экрана с доп. данными ====================
+	#define VAR_SELECT_SCR_N_STECK		0
+	#define VAR_SELECT_SCR_NASTROJKA	1
+	#define VAR_SELECT_SCR_END			2
+	uint8_t var_seclectScr_nScr;
+	//MODE_SELECT_SCR
+	void seclectScr_view()
+	{
+		scr->flicker = false;
+		scr->Clear();
+		scr->pos = 0;
+		switch (var_seclectScr_nScr)
+		{
+			case VAR_SELECT_SCR_N_STECK:
+				scr->String_P(&scr->pos, PSTR("Стек данных") );
+				return;
+				break;
+			case VAR_SELECT_SCR_NASTROJKA:
+			scr->String_P(&scr->pos, PSTR("Настройка параметров") );
+			return;
+			break;
+			default:
+				//scr->flicker = true;
+				scr->String_P(&scr->pos, PSTR("Ошибка параметра"));
+				scr->flicker = false;
+				scr->Digit(&scr->pos, 4, var_seclectScr_nScr);
+		}
+	}
+	// 
+	void seclectScr_SetMode()
+	{
+		mode = MODE_SELECT_SCR;			// пункт меню
+		// отключить timeout
+		CRITICAL_SECTION { timeOut = 0; }
+		key4->setAutoRepeatOff();		// отключить быстрый повтор кнопок
+		var_seclectScr_nScr = VAR_SELECT_SCR_N_STECK;
+		seclectScr_view();
+	}
+	// "-"
+	void seclectScr_minus()
+	{
+		if (var_seclectScr_nScr > VAR_SELECT_SCR_N_STECK)	var_seclectScr_nScr--;
+		seclectScr_view();
+	}
+	// "+"
+	void seclectScr_plus()
+	{
+		if (var_seclectScr_nScr < (VAR_SELECT_SCR_END - 1))	var_seclectScr_nScr++;
+		seclectScr_view();
+	}
+	// выбор
+	void seclectScr_ent()
+	{
+		switch(var_seclectScr_nScr)
+		{
+			case VAR_SELECT_SCR_N_STECK:
+				FnMenu(MODE_STECK_TUBE, MENU_SETMODE);
+				break;
+			case VAR_SELECT_SCR_NASTROJKA:
+// 				FnMenu(MODE_ENTER_PASS, MENU_SETMODE);
+				FnMenu(MODE_SELECT_PARAM, MENU_SETMODE);
+				break;
+		}
+	}
+	// ***************************** просмотр стека труб *****************************
+	uint8_t var_steckTube_cur;
+	uint8_t var_steckTube_max;
+	void steckTube_vDat()
+	{
+		StekTubeUnit unit1, unit2;
+		unit1 = steck->getLenghtTube(var_steckTube_cur);
+		unit2 = steck->getLenghtTube(var_steckTube_cur + 1);
+		scr->Clear();
+		scr->String_P((uint8_t)0, PSTR("Просм."));
+		scr->String_P(16, PSTR("данных"));
+		scr->Digit( 7, 2, unit1.n);
+		scr->Digit(10, 5, unit1.lenght);
+		scr->Digit(23, 2, unit2.n);
+		scr->Digit(26, 5, unit2.lenght);
+	}
+	
+	void steckTube_SetMode()
+	{
+		mode = MODE_STECK_TUBE;			// пункт меню
+		// отключить timeout
+		CRITICAL_SECTION { timeOut = 0; }
+		key4->setAutoRepeatOff();		// отключить быстрый повтор кнопок
+		var_seclectScr_nScr = MODE_STECK_TUBE;
+// 		var_steckTube_max = steck->getCountSteckMax();
+		var_steckTube_max = steck->getCountSteckFull();
+		var_steckTube_cur = 0;
+		steckTube_vDat();
+	}
+
+	void steckTube_minus()
+	{
+		if (var_steckTube_cur > 0)	var_steckTube_cur--;
+		steckTube_vDat();
+	}
+
+	void steckTube_plus()
+	{
+		if (var_steckTube_cur < (var_steckTube_max - 2))	var_steckTube_cur++;
+		steckTube_vDat();
+	}
+	
+	void steckTube_view()
+	{
+		if (ns_device::core->newData & (1 << 1))
+		{
+			ns_device::core->newData &= !(1 << 1);
+			steckTube_vDat();
+		}
+	}
 	// ***************************** ввод пароля *****************************
 	void EnterPass_Set()
 	{
@@ -244,13 +305,14 @@ namespace ns_menu
 		// статическая часть экрана
 		scr->Clear();
 		scr->pos = scr->SetPosition(0, 0);
-		printf_P(PSTR("Введите пароль:"));
+		scr->String_P(PSTR("Введите пароль:"));
 		// подготовка массива для ввода пароля
 		curPosPass = 0;
 		for (uint8_t i = 0; i < 5; i++)
 			inPass[i] = 0;
 		// timeout
 		CRITICAL_SECTION { timeOut = TIMEOUT_ENTER_PASS; }
+		EnterPass_View();
 	}
 	// вывод на экран введенной части пароля
 	void EnterPass_View()
@@ -336,9 +398,9 @@ namespace ns_menu
 			else
 			{	// пароль не верен
 				scr->Clear();
-				printf_P(PSTR("Ошибка ввода"));
+//				printf_P(PSTR("Ошибка ввода"));
 				scr->pos = scr->SetPosition(0, 1);
-				printf_P(PSTR("пароля"));
+//				printf_P(PSTR("пароля"));
 				CRITICAL_SECTION	{timeOut = 5000;}
 				//SetMode(TIMEOUT_TO_MAIN);
 				FnMenu(MODE_TIMEOUT_TO_MAIN, MENU_SETMODE);
@@ -349,80 +411,28 @@ namespace ns_menu
 	// =======================================================================
 	// *************************** выбор параметра ***************************
 	// выбираемые параметры
-	// длина буффера усреднения для вычисления скорости
-	const char selectParametr0 [] PROGMEM = "Buf.Speed Aver. ";
-	#define MN_SpeedLenghtAve												0
-	// длина буффера дельты для нахождения скорости
-	const char selectParametr1 [] PROGMEM = "Buf.Speed Delta ";
-	#define MN_SpeedLenghtDlt												1
-	// длина буффера усреднения данных для архивации дистанции
-	const char selectParametr2 [] PROGMEM = "Buf.Dist. Aver. ";
-	#define MN_DistanceLenghtAve											2
-	// длина буффера усреднения данных для архивации услилия
-	const char selectParametr3 [] PROGMEM = "Buf.Force Aver. ";
-	#define MN_ForceLenghtAve												3
+	// время интегрирования датчик 1
+	const char selectParametr0 [] PROGMEM = "D1 : t integr.  ";
+	#define MN_TimeIntegrD0													0
+	// время интегрирования датчик 2
+	const char selectParametr1 [] PROGMEM = "D2 : t integr.  ";
+	#define MN_TimeIntegrD1													1
+	// время интегрирования датчик 3
+	const char selectParametr2 [] PROGMEM = "D3 : t integr.  ";
+	#define MN_TimeIntegrD2													2
+	// дистанция от датчика 1 до датчика 2
+	const char selectParametr3 [] PROGMEM = "D1<->D2 distance";
+	#define MN_DistanceD0_D1 												3
+	// дистанция от датчика 1 до датчика 3
+	const char selectParametr4 [] PROGMEM = "D1<->D3 distance";
+	#define MN_DistanceD0_D2 												4
 	// ----------------------------------------------------------------------
-	// защитный интервал при старте двигателя (тиках)
-	const char selectParametr4 [] PROGMEM = "Safe Engine On  ";
-	#define MN_SafeIntervalEngineOn											4
-	// защитный интервал при останове двигателя (тиках)
-	const char selectParametr5 [] PROGMEM = "Safe Engine Off ";
-	#define MN_SafeIntervalEngineOff										5
+	// время прохождения короткой трубы между Д2 и Д3
+	const char selectParametr5 [] PROGMEM = "Zero timeout    ";
+	#define MN_ZeroTimeOut   												5
 	// ----------------------------------------------------------------------
-	// время отстрочки регистрации начало выдвижения штока
-	const char selectParametr6 [] PROGMEM = "Time Forwd.Start";
-	#define MN_SpeedStockTimeForwardStart									6
-	// время отстрочки регистрации окончания выдвижения штока
-	const char selectParametr7 [] PROGMEM = "Time Forwd.Stop ";
-	#define MN_SpeedStockTimeForwardStop									7
-	// время отстрочки регистрации начало задвижения штока
-	const char selectParametr8 [] PROGMEM = "Time Back Start ";
-	#define MN_SpeedStockTimeBackStart										8
-	// время отстрочки регистрации окончания задвижения штока
-	const char selectParametr9 [] PROGMEM = "Time Back Stop  ";
-	#define MN_SpeedStockTimeBackStop										9
-	// ----------------------------------------------------------------------
-	// порог скорости старта выдвижения штока
-	const char selectParametr10[] PROGMEM = "Thr.Forwd.Start ";
-	#define MN_ThresholdSpeedStockForwardStart								10
-	// порог скорости остановки выдвижения штока
-	const char selectParametr11[] PROGMEM = "Thr.Forwd.Stop  ";
-	#define MN_ThresholdSpeedStockForwardStop								11
-	// ----------------------------------------------------------------------
-	// порог скорости старта задвижения штока
-	const char selectParametr12[] PROGMEM = "Thr.Back Start  ";
-	#define MN_ThresholdSpeedStockBackStart									12
-	// порог скорости остановки задвижения штока
-	const char selectParametr13[] PROGMEM = "Thr.Back Stop   ";
-	#define MN_ThresholdSpeedStockBackStop									13
-	// ----------------------------------------------------------------------
-	// время нахождения штока на полке
-	const char selectParametr14[] PROGMEM = "Time Shelf      ";
-	#define MN_TimeStockShelf												14
-	// ----------------------------------------------------------------------
-	// время нахождения штока в исходном положении
-	const char selectParametr15[] PROGMEM = "Time Delay      ";
-	#define MN_TimeStockDelay												15
-	// ----------------------------------------------------------------------
-	// минимальное время alarm
-	const char selectParametr16[] PROGMEM = "Time Alarm      ";
-	#define MN_TimeStockAlarm												16
-	// ----------------------------------------------------------------------
-	// максимальное количество циклов автоматического замера
-	const char selectParametr17[] PROGMEM = "Auto Cycle Max  ";
-	#define MN_nCycleMax													17
-	// ----------------------------------------------------------------------
-	// время переключения контактов переключателя****
-	const char selectParametr18[] PROGMEM = "Switch1 Delay   ";
-	#define MN_Switch1Delay													18
-	// время переключения контактов переключателя****
-	const char selectParametr19[] PROGMEM = "Switch2 Delay   ";
-	#define MN_Switch2Delay													19
-	// ----------------------------------------------------------------------
-	const char selectParametr20[] PROGMEM = "Reboot";
-	#define MN_Reboot														20
-	const char selectParametr21[] PROGMEM = "Set Password";
-	#define MN_SetPassword													21
+	const char selectParametr6 [] PROGMEM = "Set Password";
+	#define MN_SetPassword													6
 	const char *selectParamTab[] = {
 		selectParametr0,
 		selectParametr1,
@@ -430,22 +440,7 @@ namespace ns_menu
 		selectParametr3,
 		selectParametr4,
 		selectParametr5,
-		selectParametr6,
-		selectParametr7,
-		selectParametr8,
-		selectParametr9,
-		selectParametr10,
-		selectParametr11,
-		selectParametr12,
-		selectParametr13,
-		selectParametr14,
-		selectParametr15,
-		selectParametr16,
-		selectParametr17,
-		selectParametr18,
-		selectParametr19,
-		selectParametr20,
-		selectParametr21
+		selectParametr6
 	};
 	uint8_t selectParametr_Idx= 0;
 	const uint8_t selectParametr_Max = (sizeof(selectParamTab) / sizeof(char *));
@@ -453,7 +448,7 @@ namespace ns_menu
 		uint8_t pos = scr->SetPosition(0, 1);
 		for (uint8_t i = 0; i < scr->GetStolbcov(); i++) scr->PutChar(&pos, ' ');
 		scr->pos = scr->SetPosition(0, 1);
-		printf_P(selectParamTab[selectParametr_Idx]);
+		scr->String_P(selectParamTab[selectParametr_Idx]);
 	}
 	void SelectParam_Set() {
 		CRITICAL_SECTION { timeOut = TIMEOUT_ENTER_PASS; }
@@ -461,7 +456,7 @@ namespace ns_menu
 		key4->setAutoRepeatOff();
 		scr->Clear();
 		scr->pos = scr->SetPosition(0, 0);
-		printf_P(PSTR("Меню:"));
+		scr->String_P(PSTR("Меню:"));
 		if (selectParametr_Idx >= selectParametr_Max) selectParametr_Idx = 0;
 		SelectParam_View();
 	}
@@ -480,248 +475,159 @@ namespace ns_menu
 			SelectParam_View();
 		}
 	}
+	// ==============================
+	const char editStr_mSec[] PROGMEM = "мСек";
+	const char editStr_mm[]   PROGMEM = "мм";
+	char *editStr;
+	// -----------
+	void EndEditU8_IntD0(uint8_t dat)
+	{
+		ns_sensors::s_sensorInt[0] = dat;
+		ns_sensors::ee_save();
+	}
+	void EndEditU8_IntD1(uint8_t dat)
+	{
+		ns_sensors::s_sensorInt[1] = dat;
+		ns_sensors::ee_save();
+	}
+	void EndEditU8_IntD2(uint8_t dat)
+	{
+		ns_sensors::s_sensorInt[2] = dat;
+		ns_sensors::ee_save();
+	}
+	// -----------
+	// -----------
 	void SelectParam_Enter() {
-// 		switch (selectParametr_Idx) {
-// 			case MN_SpeedLenghtAve:
-// 				// длина буффера усреднения для вычисления скорости
-// 				eeprom_read_block(&editU16_dat, &VG::adcCore_speedLenghtAve, sizeof(uint16_t));
-// 				editU16_min = 1;
-// 				editU16_max = 400;
-// 				FnMenu(MODE_EDIT_MSEC_U16, MENU_SETMODE);
-// 			break;
-// 			case MN_SpeedLenghtDlt:
-// 				// длина буффера дельты для нахождения скорости
-// 				eeprom_read_block(&editU8_dat, &VG::adcCore_speedLenghtDlt, sizeof(uint8_t));
-// 				editU8_min = 1;
-// 				editU8_max = 250;
-// 				FnMenu(MODE_EDIT_MSEC_U8, MENU_SETMODE);
-//  			break;
-// 			case MN_DistanceLenghtAve:
-// 				// длина буффера усреднения данных для архивации дистанции
-// 				eeprom_read_block(&editU8_dat, &VG::adcCore_distanceLenghtAve, sizeof(uint8_t));
-// 				editU8_min = 1;
-// 				editU8_max = 250;
-// 				FnMenu(MODE_EDIT_MSEC_U8, MENU_SETMODE);
-// 			break;
-// 			case MN_ForceLenghtAve:
-// 				// длина буффера усреднения данных для архивации услилия
-// 				eeprom_read_block(&editU8_dat, &VG::adcCore_forceLenghtAve, sizeof(uint8_t));
-// 				editU8_min = 1;
-// 				editU8_max = 250;
-// 				FnMenu(MODE_EDIT_MSEC_U8, MENU_SETMODE);
-// 			break;
-// // -------------------------------------------------------------------------------------------
-// 			case MN_SafeIntervalEngineOn:
-// 				// защитный интервал при старте двигателя
-// 				eeprom_read_block(&editU16_dat, &VG::safeIntervalEngineOn_set, sizeof(uint16_t));
-// 				editU16_min = 100;
-// 				editU16_max = 10000;
-// 				FnMenu(MODE_EDIT_MSEC_U16, MENU_SETMODE);
-// 			break;
-// 			case MN_SafeIntervalEngineOff:
-// 				// защитный интервал не срабатывания при остановке двигателя
-// 				eeprom_read_block(&editU16_dat, &VG::safeIntervalEngineOff_set, sizeof(uint16_t));
-// 				editU16_min = 100;
-// 				editU16_max = 10000;
-// 				FnMenu(MODE_EDIT_MSEC_U16, MENU_SETMODE);
-// 			break;
-// // -------------------------------------------------------------------------------------------
-// 			case MN_SpeedStockTimeForwardStart:
-// 				// время отстрочки регистрации начало выдвижения штока
-// 				eeprom_read_block(&editU16_dat, &VG::thresholdSpeedStockTimeForwardStart_set, sizeof(int16_t));
-// 				editU16_min = 1;
-// 				editU16_max = 500;
-// 				FnMenu(MODE_EDIT_MSEC_U16, MENU_SETMODE);
-// 			break;
-// 			case MN_SpeedStockTimeForwardStop:
-// 				// время отстрочки регистрации окончания выдвижения штока
-// 				eeprom_read_block(&editU16_dat, &VG::thresholdSpeedStockTimeForwardStop_set, sizeof(int16_t));
-// 				editU16_min = 1;
-// 				editU16_max = 500;
-// 				FnMenu(MODE_EDIT_MSEC_U16, MENU_SETMODE);
-// 			break;
-// 			case MN_SpeedStockTimeBackStart:
-// 				// время отстрочки регистрации начало задвижения штока
-// 				eeprom_read_block(&editU16_dat, &VG::thresholdSpeedStockTimeBackStart_set, sizeof(int16_t));
-// 				editU16_min = 1;
-// 				editU16_max = 500;
-// 				FnMenu(MODE_EDIT_MSEC_U16, MENU_SETMODE);
-// 			break;
-// 			case MN_SpeedStockTimeBackStop:
-// 				// время отстрочки регистрации окончания задвижения штока
-// 				eeprom_read_block(&editU16_dat, &VG::thresholdSpeedStockTimeBackStop_set, sizeof(int16_t));
-// 				editU16_min = 1;
-// 				editU16_max = 500;
-// 				FnMenu(MODE_EDIT_MSEC_U16, MENU_SETMODE);
-// 				break;
-// // -------------------------------------------------------------------------------------------
-// 			case MN_ThresholdSpeedStockForwardStart:
-// 				// порог скорости старта выдвижения штока
-// 				eeprom_read_block(&editU16_dat, &VG::thresholdSpeedStockForward_start, sizeof(int16_t));
-// 				editU16_min = 1;
-// 				editU16_max = 100;
-// 				FnMenu(MODE_EDIT_UMSEC_U16, MENU_SETMODE);
-// 				break;
-// 			case MN_ThresholdSpeedStockForwardStop:
-// 				// порог скорости остановки выдвижения штока
-// 				eeprom_read_block(&editU16_dat, &VG::thresholdSpeedStockForward_stop, sizeof(int16_t));
-// 				editU16_min = 1;
-// 				editU16_max = 100;
-// 				FnMenu(MODE_EDIT_UMSEC_U16, MENU_SETMODE);
-// 				break;
-// // -------------------------------------------------------------------------------------------
-// 			case MN_ThresholdSpeedStockBackStart:
-// 				// порог скорости старта задвижения штока
-// 				eeprom_read_block(&editU16_dat, &VG::thresholdSpeedStockBack_start, sizeof(int16_t));
-// 				editU16_min = 1;
-// 				editU16_max = 100;
-// 				FnMenu(MODE_EDIT_UMSEC_U16, MENU_SETMODE);
-// 				break;
-// 			case MN_ThresholdSpeedStockBackStop:
-// 				// порог скорости остановки задвижения штока
-// 				eeprom_read_block(&editU16_dat, &VG::thresholdSpeedStockBack_stop, sizeof(int16_t));
-// 				editU16_min = 1;
-// 				editU16_max = 100;
-// 				FnMenu(MODE_EDIT_UMSEC_U16, MENU_SETMODE);
-// 				break;
-// // -------------------------------------------------------------------------------------------
-// 			case MN_TimeStockShelf:
-// 				// время нахождения штока на полке
-// 				eeprom_read_block(&editU16_dat, &VG::timeStockShelf_set, sizeof(int16_t));
-// 				editU16_min = 500;
-// 				editU16_max = 10000;
-// 				FnMenu(MODE_EDIT_MSEC_U16, MENU_SETMODE);
-// 				break;
-// // -------------------------------------------------------------------------------------------
-// 			case MN_TimeStockDelay:
-// 				// время нахождения штока в исходном положении
-// 				eeprom_read_block(&editU16_dat, &VG::timeStockDelay_set, sizeof(int16_t));
-// 				editU16_min = 500;
-// 				editU16_max = 10000;
-// 				FnMenu(MODE_EDIT_MSEC_U16, MENU_SETMODE);
-// 				break;
-// // -------------------------------------------------------------------------------------------
-// 			case MN_TimeStockAlarm:
-// 				// минимальное время alarm
-// 				eeprom_read_block(&editU16_dat, &VG::timeAlarm_set, sizeof(int16_t));
-// 				editU16_min = 1000;
-// 				editU16_max = 10000;
-// 				FnMenu(MODE_EDIT_MSEC_U16, MENU_SETMODE);
-// 				break;
-// // -------------------------------------------------------------------------------------------
-// 			case MN_nCycleMax:
-// 				// максимальное количество циклов автоматического замера
-// 				eeprom_read_block(&editU8_dat, &VG::n_cycle_max, sizeof(int8_t));
-// 				editU8_min = 2;
-// 				editU8_max = 20;
-// 				FnMenu(MODE_EDIT_UNIT_U8, MENU_SETMODE);
-// 				break;
-// // -------------------------------------------------------------------------------------------
-// 			case MN_Switch1Delay:
-// 				// время переключения контактов переключателя****
-// 				eeprom_read_block(&editU16_dat, &VG::switch1_delay, sizeof(int16_t));
-// 				editU16_min = 10;
-// 				editU16_max = 1000;
-// 				FnMenu(MODE_EDIT_MSEC_U16, MENU_SETMODE);
-// 			break;
-// 			case MN_Switch2Delay:
-// 				// время переключения контактов переключателя****
-// 				eeprom_read_block(&editU16_dat, &VG::switch2_delay, sizeof(int16_t));
-// 				editU16_min = 10;
-// 				editU16_max = 1000;
-// 				FnMenu(MODE_EDIT_MSEC_U16, MENU_SETMODE);
-// 			break;
-// // -------------------------------------------------------------------------------------------
-// 			case MN_Reboot:
-// 				FnMenu(MODE_REBOOT, MENU_SETMODE);
-// 				break;
-// 			case MN_SetPassword:
+		switch (selectParametr_Idx) {
+			case MN_TimeIntegrD0:
+				// время интегрирования датчик 1
+// 				editUint8T_dat = ns_sensors::s_sensorInt[0];
+// 				editUint8T_min = 1;
+// 				editUint8T_max = 120;
+// 				endEdit_u8 = EndEditU8_IntD0;
+// 				editStr = (char *) editStr_mSec;
+// 				FnMenu(MODE_EDIT_UINT8T, MENU_SETMODE);
+				mEdit_Uint8T.Init(
+					ns_sensors::s_sensorInt[0],
+					1,
+					120,
+					(char *)selectParamTab[selectParametr_Idx],
+					(char *)editStr_mSec,
+					EndEditU8_IntD0
+					);
+			break;
+			case MN_TimeIntegrD1:
+				// время интегрирования датчик 2
+				editUint8T_dat = ns_sensors::s_sensorInt[1];
+				editUint8T_min = 1;
+				editUint8T_max = 120;
+				endEdit_u8 = EndEditU8_IntD1;
+				FnMenu(MODE_EDIT_UINT8T, MENU_SETMODE);
+ 			break;
+			case MN_TimeIntegrD2:
+				// время интегрирования датчик 3
+				editUint8T_dat = ns_sensors::s_sensorInt[2];
+				editUint8T_min = 1;
+				editUint8T_max = 120;
+				endEdit_u8 = EndEditU8_IntD2;
+				FnMenu(MODE_EDIT_UINT8T, MENU_SETMODE);
+			break;
+			case MN_DistanceD0_D1:
+				// дистанция от датчика 1 до датчика 2
+				editU16_dat = ns_sensors::s_sensorPosition[1];
+				editU16_min = 750;
+				editU16_max = 1400;
+				FnMenu(MODE_EDIT_UINT8T, MENU_SETMODE);
+			break;
+// -------------------------------------------------------------------------------------------
+			case MN_DistanceD0_D2:
+			case MN_SetPassword:
 // 				FnMenu(MODE_SET_PASS, MENU_SETMODE);
-// 			break;
-// 			default:
-// 			break;
-// 		}
+			break;
+			default:
+			break;
+		}
 	}
 	// ==============================
-	// редактирование параметров в секундах
-	void EditMsecU8_View() {
+	// редактирование параметров мерность : uint8_t
+	void EditUint8T_View() {
 		uint8_t pos = scr->SetPosition(0, 1);
-		scr->Digit(&pos, 3, editU8_dat);
+		scr->Digit(&pos, 3, editUint8T_dat);
 	}
-	void EditMsecU8_Set() {
-		mode = MODE_EDIT_MSEC_U8;
+	void EditUint8T_Set() {
+		mode = MODE_EDIT_UINT8T;
 		key4->setAutoRepeatOff();
 		scr->Clear();
 		scr->pos = scr->SetPosition(0, 0);
-		printf_P(selectParamTab[selectParametr_Idx]);
+		scr->String_P(selectParamTab[selectParametr_Idx]);
 		scr->String_P(PSTR(" :"));
-		scr->String_P(scr->SetPosition(0, 1), PSTR("    мСек."));
-		EditMsecU8_View();
+// 		scr->String_P(scr->SetPosition(0, 1), PSTR("    мСек."));
+ 		scr->String_P(scr->SetPosition(4, 1), editStr);
+		EditUint8T_View();
 		CRITICAL_SECTION { timeOut = TIMEOUT_EDIT; }
 	}
-	void EditMsecU8_Mns() {
+	void EditUint8T_Mns() {
 		key4->setAutoRepeatOn();
 		CRITICAL_SECTION { timeOut = TIMEOUT_EDIT; }
-		if (editU8_dat > editU8_min) {
-			editU8_dat--;
+		if (editUint8T_dat > editUint8T_min) {
+			editUint8T_dat--;
 		}
-		else editU8_dat = editU8_min;
-		EditMsecU8_View();
+		else editUint8T_dat = editUint8T_min;
+		EditUint8T_View();
 	}
-	void EditMsecU8_Pls() {
+	void 
+	EditUint8T_Pls() {
 		key4->setAutoRepeatOn();
 		CRITICAL_SECTION { timeOut = TIMEOUT_EDIT; }
-		if (editU8_dat < editU8_max)
+		if (editUint8T_dat < editUint8T_max)
 		{
-			editU8_dat++;
+			editUint8T_dat++;
 		}
-		else editU8_dat = editU8_max;
-		EditMsecU8_View();
+		else editUint8T_dat = editUint8T_max;
+		EditUint8T_View();
 	}
-	void EditMsecU8_Ent() {
+	void EditUint8T_Ent() {
 		key4->setAutoRepeatOff();
 		CRITICAL_SECTION { timeOut = 0; }
-//  		if (selectParametr_Idx == MN_SpeedLenghtAve)	{ eeprom_update_block(&editU16_dat, &VG::adcCore_speedLenghtAve, sizeof(uint16_t)); VG::adcCore_speedLenghtAve_ram = editU16_dat;	flReboot = 1; }
-//  		if (selectParametr_Idx == MN_SpeedLenghtDlt)	{ eeprom_update_block(&editU8_dat, &VG::adcCore_speedLenghtDlt, sizeof(uint8_t));	VG::adcCore_speedLenghtDlt_ram = editU16_dat;	flReboot = 1; }
-//  		if (selectParametr_Idx == MN_DistanceLenghtAve)	{ eeprom_update_block(&editU8_dat, &VG::adcCore_distanceLenghtAve, sizeof(uint8_t));												flReboot = 1; }
-//  		if (selectParametr_Idx == MN_ForceLenghtAve)	{ eeprom_update_block(&editU8_dat, &VG::adcCore_forceLenghtAve, sizeof(uint8_t));													flReboot = 1; }
+		if (endEdit_u8 != nullptr)		endEdit_u8(editUint8T_dat);
+		endEdit_u8 = nullptr;
 		FnMenu(MODE_SELECT_PARAM, MENU_SETMODE);
 	}
 	// ==============================
-	void EditMsecU16_View() {
+	void EditUint16T_View() {
 		uint8_t pos = scr->SetPosition(0, 1);
 		scr->Digit(&pos, 5, editU16_dat);
 	}
-	void EditMsecU16_Set() {
-		mode = MODE_EDIT_MSEC_U16;
+	void EditUint16T_Set() {
+		mode = MODE_EDIT_UINT16T;
 		key4->setAutoRepeatOff();
 		scr->Clear();
 		scr->pos = scr->SetPosition(0, 0);
-		printf_P(selectParamTab[selectParametr_Idx]);
+		scr->String_P(selectParamTab[selectParametr_Idx]);
 		scr->String_P(PSTR(" :"));
-		scr->String_P(scr->SetPosition(0, 1), PSTR("     мсек."));
-		EditMsecU16_View();
+		scr->String_P(scr->SetPosition(5, 1), editStr);
+		EditUint16T_View();
 		CRITICAL_SECTION { timeOut = TIMEOUT_EDIT; }
 	}
-	void EditMsecU16_Mns() {
+	void EditUint16T_Mns() {
 		key4->setAutoRepeatOn();
 		CRITICAL_SECTION { timeOut = TIMEOUT_EDIT; }
 		if (editU16_dat > editU16_min) {
 			editU16_dat--;
 		}
 		else editU16_dat = editU16_min;
-		EditMsecU16_View();
+		EditUint16T_View();
 	}
-	void EditMsecU16_Pls() {
+	void EditUint16T_Pls() {
 		key4->setAutoRepeatOn();
 		CRITICAL_SECTION { timeOut = TIMEOUT_EDIT; }
 		if (editU16_dat < editU16_max) {
 			editU16_dat++;
 		}
 		else editU16_dat = editU16_max;
-		EditMsecU16_View();
+		EditUint16T_View();
 	}
-	void EditMsecU16_Ent() {
+	void EditUint16T_Ent() {
 		CRITICAL_SECTION { timeOut = 0; }
 		key4->setAutoRepeatOff();
 //  		if (selectParametr_Idx == MN_SpeedLenghtAve)			{	eeprom_update_block(&editU16_dat, &VG::adcCore_speedLenghtAve,					sizeof(uint16_t)); VG::adcCore_speedLenghtAve_ram = editU16_dat; flReboot = 1; }
@@ -744,14 +650,14 @@ namespace ns_menu
 		scr->Digit(&pos, 5, editU16_dat);
 	}
 	void EditUmSecU16_Set() {
-		mode = MODE_EDIT_UMSEC_U16;
+// 		mode = MODE_EDIT_UMSEC_U16;
 		key4->setAutoRepeatOff();
 		scr->Clear();
 		scr->pos = scr->SetPosition(0, 0);
-		printf_P(selectParamTab[selectParametr_Idx]);
+//		printf_P(selectParamTab[selectParametr_Idx]);
 		scr->String_P(PSTR(" :"));
 		scr->String_P(scr->SetPosition(0, 1), PSTR("     шт./мсек."));
-		EditMsecU16_View();
+		EditUint16T_View();
 		CRITICAL_SECTION { timeOut = TIMEOUT_EDIT; }
 	}
 	void EditUmSecU16_Mns() {
@@ -784,14 +690,14 @@ namespace ns_menu
 	// ==============================
 	void EditUnitU8_View() {
 		uint8_t pos = scr->SetPosition(0, 1);
-		scr->Digit(&pos, 4, editU8_dat);
+		scr->Digit(&pos, 4, editUint8T_dat);
 	}
 	void EditUnitU8_Set() {
-		mode = MODE_EDIT_UNIT_U8;
+// 		mode = MODE_EDIT_UNIT_U8;
 		key4->setAutoRepeatOff();
 		scr->Clear();
 		scr->pos = scr->SetPosition(0, 0);
-		printf_P(selectParamTab[selectParametr_Idx]);
+//		printf_P(selectParamTab[selectParametr_Idx]);
 		scr->String_P(PSTR(" :"));
 //		scr->String_P(scr->SetPosition(0, 1), PSTR("    мсек."));
 		EditUnitU8_View();
@@ -800,21 +706,21 @@ namespace ns_menu
 	void EditUnitU8_Mns() {
 		key4->setAutoRepeatOn();
 		CRITICAL_SECTION { timeOut = TIMEOUT_EDIT; }
-		if (editU8_dat > editU8_min)
+		if (editUint8T_dat > editUint8T_min)
 		{
-			editU8_dat--;
+			editUint8T_dat--;
 		}
-		else editU8_dat = editU8_min;
+		else editUint8T_dat = editUint8T_min;
 		EditUnitU8_View();
 	}
 	void EditUnitU8_Pls() {
 		key4->setAutoRepeatOn();
 		CRITICAL_SECTION { timeOut = TIMEOUT_EDIT; }
-		if (editU8_dat < editU8_max)
+		if (editUint8T_dat < editUint8T_max)
 		{
-			editU8_dat++;
+			editUint8T_dat++;
 		}
-		else editU8_dat = editU8_max;
+		else editUint8T_dat = editUint8T_max;
 		EditUnitU8_View();
 	}
 	void EditUnitU8_Ent() {
@@ -825,7 +731,7 @@ namespace ns_menu
 	}
 	// ==============================
 	void Reboot_Set() {
-		mode = MODE_REBOOT;
+// 		mode = MODE_REBOOT;
 		//flReboot = 1;
 		scr->Clear();
 		scr->pos = scr->SetPosition(4, 0);
@@ -862,9 +768,9 @@ namespace ns_menu
 	}
 	void SetPass_Set()
 	{
-		mode = MODE_SET_PASS;
+// 		mode = MODE_SET_PASS;
 		scr->Clear();
-		printf_P(PSTR("новый пароль:"));
+//		printf_P(PSTR("новый пароль:"));
 		for (uint8_t i=0; i<5; i++) inPass[i] = 0;
 			curPosPass = 0;
 			Set_PassView();
@@ -913,16 +819,16 @@ namespace ns_menu
 			for (uint8_t i=0; i<5; i++)
 				eeprom_update_byte((uint8_t *)&eePass[i], inPass[i]);
 			scr->Clear();
-			printf_P(PSTR("Новый пароль"));
+//			printf_P(PSTR("Новый пароль"));
 			scr->pos = scr->SetPosition(0, 1);
-			printf_P(PSTR("установлен"));
+//			printf_P(PSTR("установлен"));
 			CRITICAL_SECTION { timeOut = 5000; }
-			FnMenu(MODE_TIMEOUT, MENU_SETMODE);
+// 			FnMenu(MODE_TIMEOUT, MENU_SETMODE);
 		}
 	}
 	// ==============================
 	void Timeout_Set() {
-		mode = MODE_TIMEOUT;
+// 		mode = MODE_TIMEOUT;
 	}
 #include "menu_tab_fn.h"
 }

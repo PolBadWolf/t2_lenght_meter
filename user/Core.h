@@ -19,6 +19,7 @@ class Core
 {
 //variables
 public:
+	unsigned char	newData;
 protected:
 	signed char		stat;
 	NewTubeCallBack	newTubeCallBack;

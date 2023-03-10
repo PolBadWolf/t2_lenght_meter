@@ -16,6 +16,7 @@ namespace ns_sensors
 {
 	int32_t		time_sensors[3][2];								// запись перемещения трубы в тиках
 	int32_t		s_count;										// счетчик тиков
+	int32_t		v_count;										// счетчик тиков
 	int32_t		t_count;										// счетчик тиков для таймаута
 	Sensor		*sensor[3];										// объекты сенсоры
 	uint8_t		statusWork = 0;									// блокировка от повторных срабатываний событий на сенсорах
@@ -23,6 +24,7 @@ namespace ns_sensors
 	bool		debugOn = false;
 	bool		debugSensor[3];
 	bool		*sensorMass[3];
+	bool		blockirovka;									// блокировка замера внешним сигналом
 	// =====
 	int32_t		s_count_timeOut			= 5000;
 	int32_t		e_count_timeOut EEMEM	= 5000;
@@ -32,6 +34,8 @@ namespace ns_sensors
 	//
 	int16_t		s_sensorPosition[3]			= {0, 1000, 11045};			// позитции сенсоров
 	int16_t		e_sensorPosition[3] EEMEM	= {0, 1000, 11045};			// позитции сенсоров
+	// =========================
+	Sensor		*blockIzmer;
 
 	void ee_load()
 	{
@@ -40,7 +44,7 @@ namespace ns_sensors
 		{
 			s_sensorInt[i] = eeprom_read_byte((uint8_t *) & e_sensorInt[i]);
 		}
-		// время time_out
+		// время zero time_out
 		eeprom_read_block(&s_count_timeOut, &e_count_timeOut, sizeof(s_count_timeOut));
 		// позитция сенсоров
 		for (uint8_t i = 0; i < 3; i++)
@@ -55,7 +59,7 @@ namespace ns_sensors
 		{
 			eeprom_update_byte((uint8_t *) & e_sensorInt[i], s_sensorInt[i]);
 		}
-		// время time_out
+		// время zero time_out
 		eeprom_update_block(&s_count_timeOut, &e_count_timeOut, sizeof(s_count_timeOut));
 		// позитция сенсоров
 		for (uint8_t i = 0; i < 3; i++)
@@ -121,6 +125,7 @@ namespace ns_sensors
 			blockSensor = true;
 		}
 	}
+	void callBackBlock(uint8_t nSensor, bool stat)	{ }
 	// ==========
 	void initIntegr()
 	{
@@ -136,20 +141,43 @@ namespace ns_sensors
 		sensor[0] = new Sensor(0, &DDRC, &PORTC, &PINC, 0, callBack);
 		sensor[1] = new Sensor(1, &DDRC, &PORTC, &PINC, 1, callBack);
 		sensor[2] = new Sensor(2, &DDRC, &PORTC, &PINC, 2, callBack);
+		blockIzmer = new Sensor(0, &DDRC, &PORTC, &PINC, 3, callBackBlock);
 		initIntegr();
 		s_count = 0;
-		blockSensor = false;
 		for (uint8_t i = 0; i < 3; i++)		sensorMass[i] = &sensor[i]->stat;
 		statusWork = 0;
 		t_count = 0;
+		blockirovka = false;
+		// инициализация массива сенсоров
+		blockSensor = true;
+		for (uint8_t i = 0; i < 3; i++)
+		{
+			for (uint8_t j = 0; j < (sensor[i]->getCountMax() + 5); j++)
+			{
+				__delay_ms(1);
+				sensor[i]->interrupt();
+			}
+			sensorMass[i] = &sensor[i]->stat;
+		}
+		for (uint8_t j = 0; j < (blockIzmer->getCountMax() + 5); j++)
+		{
+			__delay_ms(1);
+			blockIzmer->interrupt();
+		}
+		blockSensor = false;
 	}
 	// ===============
 	void interrupt()
 	{
 		if (statusWork & (1 << 0) && !blockSensor)	s_count++;
+		else blockirovka = false;
+		if (s_count != 0 && s_count != s_count_timeOut) v_count = s_count;
 		sensor[0]->interrupt();
 		sensor[1]->interrupt();
 		sensor[2]->interrupt();
+		//
+		blockIzmer->interrupt();
+		blockirovka |= blockIzmer->stat;
 // 		SCR->Hex(13, PINC);
 		// сброс замера по таймауту при свободных датчиках
 // 		if ((s_count >= s_count_timeOut) && !*sensorMass[0] && !*sensorMass[1] && !*sensorMass[2])
@@ -209,6 +237,7 @@ namespace ns_sensors
 	int getReadyData()
 	{
 		if (!blockSensor)	return 0;
+		if (blockirovka)	return -2;
 		if (	(time_sensors[2][1] > time_sensors[1][1])
 			&&	(time_sensors[1][1] > time_sensors[0][1])
 			)	return 1;

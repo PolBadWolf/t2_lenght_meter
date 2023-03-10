@@ -143,6 +143,7 @@ FILE* Lcd_hard::Init(void *obj, uint8_t stolbcov)
 	__delay_ms(1);
 	// ================================
 	thisObj = (Lcd_hard *)obj;
+	blockRestart = 0;
 	return fdevopen(putCharX, NULL);
 }
 
@@ -181,6 +182,7 @@ void Lcd_hard::Send(uint8_t data)
 
 void Lcd_hard::Interrupt()
 {
+	if (blockRestart++ != 0)	return;
 	// моргание
 	scrFlashCount--;
 	if (scrFlashCount == 0)
@@ -209,7 +211,7 @@ void Lcd_hard::Interrupt()
 	
 	{
 		if ( ((*scrFlashPtr) & (((uint32_t)1)<<(indxRefresh % c_stolbcov))) && scrFlashStat)
-//		if ( ( scrFlash[indxRefresh / c_stolbcov] & ( 1<< (indxRefresh % c_stolbcov)) ) && scrFlashStat )
+		//		if ( ( scrFlash[indxRefresh / c_stolbcov] & ( 1<< (indxRefresh % c_stolbcov)) ) && scrFlashStat )
 		{
  			if (tmp >= 8 && tmp <= ' ') tmp = 255;
  			else
@@ -217,6 +219,7 @@ void Lcd_hard::Interrupt()
 		}
 	}
 	SendData(tmp);
+	blockRestart = 0;
 }
 
 // static const char* Lcd_hard::tabDecoder = 

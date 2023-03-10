@@ -79,9 +79,6 @@ int main(void)
 		ns_sensors::startOfDataCollection();
 	}
 // 	ns_sensors::startOfDataCollection();
-	STECK_TUBE->tubes[0].lenght = 11;
-	STECK_TUBE->tubes[1].lenght = 22;
-	STECK_TUBE->tubes[2].lenght = 33;
 	while(true)
 	{
 		if (++count_ind == 5)
@@ -146,7 +143,7 @@ int main(void)
 						break;
 					case CORESTAT_OK:
  						SCR->Clear();
-						SCR->DigitZ((uint8_t)0, 5, ns_device::core->getCurrentLenghtTube());
+//						SCR->DigitZ((uint8_t)0, 5, ns_device::core->getCurrentLenghtTube());
 //						SCR->DigitZ(8, 1, STECK_TUBE->getCountSteck());
 						ns_device::core->resetStat();
 // 						SCR->DigitM( 8, 6, STECK_TUBE->getLenghtTube(STECK_TUBE->getCountSteck()-1));
@@ -164,7 +161,7 @@ int main(void)
 							
 // 							x = normX(STECK_TUBE->getCountSteckCurrent() - 0, 0, max);
 							x = STECK_TUBE->getCountSteckCurrent();
-							SCR->DigitM(16, 3, x);
+//							SCR->DigitM(16, 3, x);
 							StekTubeUnit unit;
 							unit = STECK_TUBE->getLenghtTube(x - 2);
 							if (unit.n > 0 && unit.n < 100)
@@ -192,9 +189,10 @@ int main(void)
 						}
 						break;
 					default:
-// 						SCR->PutChar(16, ((*ns_sensors::sensorMass[0]) ? 1 : 0) );
-// 						SCR->PutChar(17, ((*ns_sensors::sensorMass[1]) ? 1 : 0) );
-// 						SCR->PutChar(18, ((*ns_sensors::sensorMass[2]) ? 1 : 0) );
+						SCR->PutChar(16, ((*ns_sensors::sensorMass[0]) ? 1 : 0) );
+						SCR->PutChar(17, ((*ns_sensors::sensorMass[1]) ? 1 : 0) );
+						SCR->PutChar(18, ((*ns_sensors::sensorMass[2]) ? 1 : 0) );
+						SCR->DigitZ((uint8_t)0, 5, ns_sensors::v_count);
 						break;
 				}
 			}

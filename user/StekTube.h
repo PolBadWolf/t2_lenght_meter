@@ -17,10 +17,6 @@ public:
 	static StekTubeUnit* init(unsigned char nTubes)
 	{
 		StekTubeUnit *tubes = new StekTubeUnit[nTubes];
-// 		for (unsigned char i = 0; i< nTubes; i++)
-// 		{
-// 			tubes[i] = new StekTubeUnit();
-// 		}
 		return tubes;
 	}
 	StekTubeUnit()
@@ -43,7 +39,6 @@ class StekTube
 public:
 	StekTubeUnit	*tubes;
 protected:
-// 	StekTubeUnit	*tubes;
 	unsigned char	countTubesMax;
 	unsigned char	countTubes;
 	unsigned char	countTubesCycle;
@@ -53,10 +48,11 @@ private:
 public:
 	StekTube(unsigned char nTubes);
 // 	~StekTube();
-	void newTubeLocal(unsigned int lenghtTube, unsigned char count);
+	void newTubeLocal(unsigned int lenghtTube,   unsigned char count);
 	static void newTube(unsigned int lenghtTube, unsigned char count);
 	unsigned char getCountSteckFull();
 	unsigned char getCountSteckCurrent();
+	  signed char normIndxMass(signed char n);
 	unsigned char getCountSteckMax();
 	StekTubeUnit  getLenghtTube(signed char nTube);
 protected:
