@@ -549,102 +549,6 @@ namespace ns_menu
 		}
 	}
 	// ==============================
-	// редактирование параметров мерность : uint8_t
-	void EditUint8T_View() {
-		uint8_t pos = scr->SetPosition(0, 1);
-		scr->Digit(&pos, 3, editUint8T_dat);
-	}
-	void EditUint8T_Set() {
-		mode = MODE_EDIT_UINT8T;
-		key4->setAutoRepeatOff();
-		scr->Clear();
-		scr->pos = scr->SetPosition(0, 0);
-		scr->String_P(selectParamTab[selectParametr_Idx]);
-		scr->String_P(PSTR(" :"));
-// 		scr->String_P(scr->SetPosition(0, 1), PSTR("    м—ек."));
- 		scr->String_P(scr->SetPosition(4, 1), editStr);
-		EditUint8T_View();
-		CRITICAL_SECTION { timeOut = TIMEOUT_EDIT; }
-	}
-	void EditUint8T_Mns() {
-		key4->setAutoRepeatOn();
-		CRITICAL_SECTION { timeOut = TIMEOUT_EDIT; }
-		if (editUint8T_dat > editUint8T_min) {
-			editUint8T_dat--;
-		}
-		else editUint8T_dat = editUint8T_min;
-		EditUint8T_View();
-	}
-	void 
-	EditUint8T_Pls() {
-		key4->setAutoRepeatOn();
-		CRITICAL_SECTION { timeOut = TIMEOUT_EDIT; }
-		if (editUint8T_dat < editUint8T_max)
-		{
-			editUint8T_dat++;
-		}
-		else editUint8T_dat = editUint8T_max;
-		EditUint8T_View();
-	}
-	void EditUint8T_Ent() {
-		key4->setAutoRepeatOff();
-		CRITICAL_SECTION { timeOut = 0; }
-		if (endEdit_u8 != nullptr)		endEdit_u8(editUint8T_dat);
-		endEdit_u8 = nullptr;
-		FnMenu(MODE_SELECT_PARAM, MENU_SETMODE);
-	}
-	// ==============================
-	void EditUint16T_View() {
-		uint8_t pos = scr->SetPosition(0, 1);
-		scr->Digit(&pos, 5, editU16_dat);
-	}
-	void EditUint16T_Set() {
-		mode = MODE_EDIT_UINT16T;
-		key4->setAutoRepeatOff();
-		scr->Clear();
-		scr->pos = scr->SetPosition(0, 0);
-		scr->String_P(selectParamTab[selectParametr_Idx]);
-		scr->String_P(PSTR(" :"));
-		scr->String_P(scr->SetPosition(5, 1), editStr);
-		EditUint16T_View();
-		CRITICAL_SECTION { timeOut = TIMEOUT_EDIT; }
-	}
-	void EditUint16T_Mns() {
-		key4->setAutoRepeatOn();
-		CRITICAL_SECTION { timeOut = TIMEOUT_EDIT; }
-		if (editU16_dat > editU16_min) {
-			editU16_dat--;
-		}
-		else editU16_dat = editU16_min;
-		EditUint16T_View();
-	}
-	void EditUint16T_Pls() {
-		key4->setAutoRepeatOn();
-		CRITICAL_SECTION { timeOut = TIMEOUT_EDIT; }
-		if (editU16_dat < editU16_max) {
-			editU16_dat++;
-		}
-		else editU16_dat = editU16_max;
-		EditUint16T_View();
-	}
-	void EditUint16T_Ent() {
-		CRITICAL_SECTION { timeOut = 0; }
-		key4->setAutoRepeatOff();
-//  		if (selectParametr_Idx == MN_SpeedLenghtAve)			{	eeprom_update_block(&editU16_dat, &VG::adcCore_speedLenghtAve,					sizeof(uint16_t)); VG::adcCore_speedLenghtAve_ram = editU16_dat; flReboot = 1; }
-//  		if (selectParametr_Idx == MN_SafeIntervalEngineOn)			eeprom_update_block(&editU16_dat, &VG::safeIntervalEngineOn_set,				sizeof(uint16_t));
-//  		if (selectParametr_Idx == MN_SafeIntervalEngineOff)			eeprom_update_block(&editU16_dat, &VG::safeIntervalEngineOff_set,				sizeof(uint16_t));
-//  		if (selectParametr_Idx == MN_SpeedStockTimeForwardStart)	eeprom_update_block(&editU16_dat, &VG::thresholdSpeedStockTimeForwardStart_set,	sizeof(uint16_t));
-//  		if (selectParametr_Idx == MN_SpeedStockTimeForwardStop)		eeprom_update_block(&editU16_dat, &VG::thresholdSpeedStockTimeForwardStop_set,	sizeof(uint16_t));
-//  		if (selectParametr_Idx == MN_SpeedStockTimeBackStart)		eeprom_update_block(&editU16_dat, &VG::thresholdSpeedStockTimeBackStart_set,	sizeof(uint16_t));
-//  		if (selectParametr_Idx == MN_SpeedStockTimeBackStop)		eeprom_update_block(&editU16_dat, &VG::thresholdSpeedStockTimeBackStop_set,		sizeof(uint16_t));
-//  		if (selectParametr_Idx == MN_TimeStockShelf)				eeprom_update_block(&editU16_dat, &VG::timeStockShelf_set,						sizeof(uint16_t));
-//  		if (selectParametr_Idx == MN_TimeStockDelay)				eeprom_update_block(&editU16_dat, &VG::timeStockDelay_set,						sizeof(uint16_t));
-//  		if (selectParametr_Idx == MN_TimeStockAlarm)				eeprom_update_block(&editU16_dat, &VG::timeAlarm_set,							sizeof(uint16_t));
-//  		if (selectParametr_Idx == MN_Switch1Delay)				{	eeprom_update_block(&editU16_dat, &VG::switch1_delay,							sizeof(uint16_t)); flReboot = 1; }
-//  		if (selectParametr_Idx == MN_Switch2Delay)				{	eeprom_update_block(&editU16_dat, &VG::switch2_delay,							sizeof(uint16_t)); flReboot = 1; }
-		FnMenu(MODE_SELECT_PARAM, MENU_SETMODE);
-	}
-	// ==============================
 	void EditUmSecU16_View() {
 		uint8_t pos = scr->SetPosition(0, 1);
 		scr->Digit(&pos, 5, editU16_dat);
@@ -657,7 +561,7 @@ namespace ns_menu
 //		printf_P(selectParamTab[selectParametr_Idx]);
 		scr->String_P(PSTR(" :"));
 		scr->String_P(scr->SetPosition(0, 1), PSTR("     шт./мсек."));
-		EditUint16T_View();
+// 		EditUint16T_View();
 		CRITICAL_SECTION { timeOut = TIMEOUT_EDIT; }
 	}
 	void EditUmSecU16_Mns() {

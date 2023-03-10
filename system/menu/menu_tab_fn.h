@@ -24,7 +24,7 @@ const TyFnMn MassFnMn[][8] PROGMEM =
 	{				Dupm,				Dupm,					Dupm,					Dupm,					  Dupm,				Dupm,				Dupm,	 SelectParam_Set }, //  5 delay, go menu
 	{				Dupm, seclectScr_SetMode,	   SelectParam_Minus,		SelectParam_Plus,		 SelectParam_Enter,				Dupm,	 SelectParam_Set,		Main_SetMode }, //  6 выбор параметра в меню
 	{				Dupm,	 SelectParam_Set, MenuEdit_Uint8T::minus,  MenuEdit_Uint8T::plus,	MenuEdit_Uint8T::enter,				Dupm,				Dupm,	 SelectParam_Set }, //  7 редактирование параметров мерность : uint8_t
-	{				Dupm,	 SelectParam_Set, MenuEdit_Uint8T::minus,  MenuEdit_Uint8T::plus,	MenuEdit_Uint8T::enter,				Dupm,	 EditUint16T_Set,	 SelectParam_Set }, //  8 редактирование параметров мерность : uint16_t
+	{				Dupm,	 SelectParam_Set, MenuEdit_Uint8T::minus,  MenuEdit_Uint8T::plus,	MenuEdit_Uint8T::enter,				Dupm,				Dupm,	 SelectParam_Set }, //  8 редактирование параметров мерность : uint16_t
 	{				Dupm,				Dupm,					Dupm,					Dupm,					  Dupm,				Dupm,				Dupm,				Dupm },
 	{				Dupm,				Dupm,					Dupm,					Dupm,					  Dupm,				Dupm,				Dupm,				Dupm },
 	{				Dupm,				Dupm,					Dupm,					Dupm,					  Dupm,				Dupm,				Dupm,				Dupm },

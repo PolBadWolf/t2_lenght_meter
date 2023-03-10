@@ -64,8 +64,6 @@ void MenuEdit_Uint8T::minusL()
 		CRITICAL_SECTION { ns_menu::timeOut = TIMEOUT_EDIT; }
 		if (dat > min)	dat--;
 		else			dat = min;
-		scr->Hex(scr->SetPosition(12, 1), dat);
-		scr->Hex(scr->SetPosition(14, 1), min);
 		viewL();
 }
 
