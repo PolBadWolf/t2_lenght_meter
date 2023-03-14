@@ -14,23 +14,16 @@
 #include "user/Sensors.h"
 #define STECK_TUBE ns_device::steckTube
 
-#include "DeB.h" // ***********
+// #include "DeB.h" // ***********
 
 // #include "system/communication/rs232.h"
 
 #define rs_232	ns_device::rs232
 
-signed char normX(signed char x, signed char min, signed char max)
-{
-	while (x < min)		x += max;
-	while (x >= max)	x -= max;
-	return x;
-}
-
 int main(void)
 {
-	DeB *deb =  new DeB();
-	deb->main();
+// 	DeB *deb =  new DeB();
+// 	deb->main();
 	// ====================
 // 	StekTube *steck = new StekTube(3);
 // 	StekTube::newTube(5500);
