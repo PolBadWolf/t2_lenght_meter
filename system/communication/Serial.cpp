@@ -67,7 +67,7 @@ void Serial::digitZ(uint8_t len, int32_t digit)
 {
 	char stroka[len + 1];
 	uint8_t index = len;
-	stroka[index] = 0x96;
+	stroka[index] = 0;
 	uint8_t low;
 	if (digit < 0)
 	{
