@@ -10,10 +10,15 @@
 #define __CORE_H__
 
 #define CORESTAT_NONE	0
-#define CORESTAT_ERROR	1
-#define CORESTAT_OK		2
+#define CORESTAT_IZM	1
+#define CORESTAT_BLOCK	2
+#define CORESTAT_ERRSN	3
+#define CORESTAT_ERRIZ	4
+#define CORESTAT_OK		5
 
 typedef void(*NewTubeCallBack)(unsigned int lenghtTube, unsigned char count);
+
+#include "SendRS.h"
 
 class Core
 {
@@ -26,6 +31,7 @@ protected:
 	unsigned int	currentLenghtTube;
 	unsigned char	count99;
 private:
+	SendRS			sendRS;
 
 //functions
 public:

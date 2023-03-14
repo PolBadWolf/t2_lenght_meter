@@ -51,9 +51,6 @@ class tc_key4
 	void setAutoRepeatOff();
 	protected:
 	private:
-	//tc_key4( const tc_key4 &c );
-	//tc_key4& operator=( const tc_key4 &c );
-	//void static (* const FN[][2])(unsigned char par);
 	void static (* const FN[])(unsigned char par);
 	unsigned char norm(unsigned char idx);
 	void Push(unsigned char dat);

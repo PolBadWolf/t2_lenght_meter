@@ -16,6 +16,10 @@
 
 #include "DeB.h" // ***********
 
+// #include "system/communication/rs232.h"
+
+#define rs_232	ns_device::rs232
+
 signed char normX(signed char x, signed char min, signed char max)
 {
 	while (x < min)		x += max;
@@ -36,6 +40,14 @@ int main(void)
 	ns_device::Init();
 	sei();
 #ifdef CONF_MENU
+ 	__delay_ms(1000);
+	rs_232->string_P(PSTR("\r\nHello world !!!\r\n"));
+	rs_232->digit(3, 25);
+	rs_232->string_P(PSTR("\r\n"));
+	rs_232->digit(3, 1999);
+	rs_232->string_P(PSTR("\r\n"));
+	rs_232->digit(4, 1999);
+	rs_232->string_P(PSTR("\r\n"));
 	while (true)
 	{
 		ns_device::MainCicle();

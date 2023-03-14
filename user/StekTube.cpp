@@ -8,7 +8,7 @@
 
 #include "StekTube.h"
 
-static StekTube *obj;
+StekTube *StekTube::obj;
 
 // default constructor
 StekTube::StekTube(unsigned char nTubes)

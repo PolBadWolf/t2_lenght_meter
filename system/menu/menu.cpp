@@ -13,6 +13,7 @@
 #include <math.h>
 #include "../device.h"
 #include "MenuEdit_Uint8T.h"
+#include "MenuEdit_Uint16T.h"
 
 #define  key4	ns_device::key
 #define  scr	ns_device::scr
@@ -37,6 +38,7 @@ namespace ns_menu
 	#define MENU_TIMEOUT		7		// 7 : timeout
 	// ------------
 	MenuEdit_Uint8T		mEdit_Uint8T;
+	MenuEdit_Uint16T	mEdit_Uint16T;
 	// ==================================================
 	// ******** массив функций меню *********************
 	typedef void(*TyFnMn)();
@@ -168,6 +170,28 @@ namespace ns_menu
 				scr->Digit (23, 2, unit.n);
 				scr->DigitZ(26, 5, unit.lenght);
 			}
+			switch (ns_device::core->getStat())
+			{
+				case CORESTAT_BLOCK:
+					scr->flicker = true;
+					scr->PutChar(scr->SetPosition(15, 0), 'B');
+					scr->flicker = false;
+					break;
+				case CORESTAT_ERRSN:
+					scr->flicker = true;
+					scr->PutChar(scr->SetPosition(15, 0), 'S');
+					scr->flicker = false;
+					break;
+				case CORESTAT_ERRIZ:
+					scr->flicker = true;
+					scr->PutChar(scr->SetPosition(15, 0), 'E');
+					scr->flicker = false;
+					break;
+				case CORESTAT_OK:
+					scr->flicker = false;
+					scr->PutChar(scr->SetPosition(15, 0), ' ');
+					break;
+			}
 		}
 		// ************** датчики **************************
 		scr->PutChar(16, ((*ns_sensors::sensorMass[0]) ? 1 : 0) );
@@ -179,8 +203,6 @@ namespace ns_menu
 	}
 	void Main_menu()
 	{
-		//FnMenu(MODE_ENTER_PASS, MENU_SETMODE);
-// 		FnMenu(MODE_SELECT_PARAM, MENU_SETMODE); // обход ввода пароля
 		FnMenu(MODE_SELECT_SCR, MENU_SETMODE);
 	}
 	// ====================== 2 Выбор экрана с доп. данными ====================
@@ -193,19 +215,20 @@ namespace ns_menu
 	{
 		scr->flicker = false;
 		scr->Clear();
-		scr->pos = 0;
 		switch (var_seclectScr_nScr)
 		{
 			case VAR_SELECT_SCR_N_STECK:
-				scr->String_P(&scr->pos, PSTR("Стек данных") );
+				scr->String_P(scr->SetPosition(0, 0), PSTR("Просмотр") );
+				scr->String_P(scr->SetPosition(0, 1), PSTR("данных") );
 				return;
 				break;
 			case VAR_SELECT_SCR_NASTROJKA:
-			scr->String_P(&scr->pos, PSTR("Настройка параметров") );
+			scr->String_P(scr->SetPosition(0, 0), PSTR("Настройка") );
+			scr->String_P(scr->SetPosition(0, 1), PSTR("параметров") );
 			return;
 			break;
 			default:
-				//scr->flicker = true;
+				scr->flicker = true;
 				scr->String_P(&scr->pos, PSTR("Ошибка параметра"));
 				scr->flicker = false;
 				scr->Digit(&scr->pos, 4, var_seclectScr_nScr);
@@ -215,8 +238,7 @@ namespace ns_menu
 	void seclectScr_SetMode()
 	{
 		mode = MODE_SELECT_SCR;			// пункт меню
-		// отключить timeout
-		CRITICAL_SECTION { timeOut = 0; }
+		CRITICAL_SECTION { timeOut = TIMEOUT_SECSRC; }
 		key4->setAutoRepeatOff();		// отключить быстрый повтор кнопок
 		var_seclectScr_nScr = VAR_SELECT_SCR_N_STECK;
 		seclectScr_view();
@@ -224,26 +246,29 @@ namespace ns_menu
 	// "-"
 	void seclectScr_minus()
 	{
+		CRITICAL_SECTION { timeOut = TIMEOUT_SECSRC; }
 		if (var_seclectScr_nScr > VAR_SELECT_SCR_N_STECK)	var_seclectScr_nScr--;
 		seclectScr_view();
 	}
 	// "+"
 	void seclectScr_plus()
 	{
+		CRITICAL_SECTION { timeOut = TIMEOUT_SECSRC; }
 		if (var_seclectScr_nScr < (VAR_SELECT_SCR_END - 1))	var_seclectScr_nScr++;
 		seclectScr_view();
 	}
 	// выбор
 	void seclectScr_ent()
 	{
+		CRITICAL_SECTION { timeOut = 0; }
 		switch(var_seclectScr_nScr)
 		{
 			case VAR_SELECT_SCR_N_STECK:
 				FnMenu(MODE_STECK_TUBE, MENU_SETMODE);
 				break;
 			case VAR_SELECT_SCR_NASTROJKA:
-// 				FnMenu(MODE_ENTER_PASS, MENU_SETMODE);
-				FnMenu(MODE_SELECT_PARAM, MENU_SETMODE);
+				FnMenu(MODE_ENTER_PASS, MENU_SETMODE);
+// 				FnMenu(MODE_SELECT_PARAM, MENU_SETMODE);	// обход ввода пароля
 				break;
 		}
 	}
@@ -484,30 +509,48 @@ namespace ns_menu
 	{
 		ns_sensors::s_sensorInt[0] = dat;
 		ns_sensors::ee_save();
+		SelectParam_Set();
 	}
 	void EndEditU8_IntD1(uint8_t dat)
 	{
 		ns_sensors::s_sensorInt[1] = dat;
 		ns_sensors::ee_save();
+		SelectParam_Set();
 	}
 	void EndEditU8_IntD2(uint8_t dat)
 	{
 		ns_sensors::s_sensorInt[2] = dat;
 		ns_sensors::ee_save();
+		SelectParam_Set();
 	}
 	// -----------
+	void EndEditU16_DistD0D1(uint16_t dat)
+	{
+		ns_sensors::s_sensorPosition[0] = 0;
+		ns_sensors::s_sensorPosition[1] = dat;
+		ns_sensors::ee_save();
+		SelectParam_Set();
+	}
+	void EndEditU16_DistD0D2(uint16_t dat)
+	{
+		ns_sensors::s_sensorPosition[0] = 0;
+		ns_sensors::s_sensorPosition[2] = dat;
+		ns_sensors::ee_save();
+		SelectParam_Set();
+	}
+	void EndEditU16_ZeroTimeOut(uint16_t dat)
+	{
+		ns_sensors::s_count_timeOut = dat;
+		ns_sensors::ee_save();
+		SelectParam_Set();
+	}
+	// *******************************************
 	// -----------
 	void SelectParam_Enter() {
 		switch (selectParametr_Idx) {
 			case MN_TimeIntegrD0:
 				// время интегрирования датчик 1
-// 				editUint8T_dat = ns_sensors::s_sensorInt[0];
-// 				editUint8T_min = 1;
-// 				editUint8T_max = 120;
-// 				endEdit_u8 = EndEditU8_IntD0;
-// 				editStr = (char *) editStr_mSec;
-// 				FnMenu(MODE_EDIT_UINT8T, MENU_SETMODE);
-				mEdit_Uint8T.Init(
+				mEdit_Uint8T.init(
 					ns_sensors::s_sensorInt[0],
 					1,
 					120,
@@ -518,120 +561,64 @@ namespace ns_menu
 			break;
 			case MN_TimeIntegrD1:
 				// время интегрирования датчик 2
-				editUint8T_dat = ns_sensors::s_sensorInt[1];
-				editUint8T_min = 1;
-				editUint8T_max = 120;
-				endEdit_u8 = EndEditU8_IntD1;
-				FnMenu(MODE_EDIT_UINT8T, MENU_SETMODE);
+				mEdit_Uint8T.init(
+					ns_sensors::s_sensorInt[1],
+					1,
+					120,
+					(char *)selectParamTab[selectParametr_Idx],
+					(char *)editStr_mSec,
+					EndEditU8_IntD1
+				);
  			break;
 			case MN_TimeIntegrD2:
 				// время интегрирования датчик 3
-				editUint8T_dat = ns_sensors::s_sensorInt[2];
-				editUint8T_min = 1;
-				editUint8T_max = 120;
-				endEdit_u8 = EndEditU8_IntD2;
-				FnMenu(MODE_EDIT_UINT8T, MENU_SETMODE);
+				mEdit_Uint8T.init(
+					ns_sensors::s_sensorInt[2],
+					1,
+					120,
+					(char *)selectParamTab[selectParametr_Idx],
+					(char *)editStr_mSec,
+					EndEditU8_IntD2
+				);
 			break;
 			case MN_DistanceD0_D1:
 				// дистанция от датчика 1 до датчика 2
-				editU16_dat = ns_sensors::s_sensorPosition[1];
-				editU16_min = 750;
-				editU16_max = 1400;
-				FnMenu(MODE_EDIT_UINT8T, MENU_SETMODE);
+				mEdit_Uint16T.init(
+					ns_sensors::s_sensorPosition[1],
+					750,
+					1500,
+					(char *)selectParamTab[selectParametr_Idx],
+					(char *)editStr_mm,
+					EndEditU16_DistD0D1
+				);
 			break;
 // -------------------------------------------------------------------------------------------
 			case MN_DistanceD0_D2:
+				mEdit_Uint16T.init(
+				ns_sensors::s_sensorPosition[2],
+				10500,
+				11500,
+				(char *)selectParamTab[selectParametr_Idx],
+				(char *)editStr_mm,
+				EndEditU16_DistD0D2
+				);
+			break;
+			case MN_ZeroTimeOut:
+				mEdit_Uint16T.init(
+				ns_sensors::s_count_timeOut,
+				3500,
+				15000,
+				(char *)selectParamTab[selectParametr_Idx],
+				(char *)editStr_mSec,
+				EndEditU16_ZeroTimeOut
+				);
+			break;
 			case MN_SetPassword:
-// 				FnMenu(MODE_SET_PASS, MENU_SETMODE);
+ 				FnMenu(MODE_SET_PASS, MENU_SETMODE);
 			break;
 			default:
 			break;
 		}
-	}
-	// ==============================
-	void EditUmSecU16_View() {
-		uint8_t pos = scr->SetPosition(0, 1);
-		scr->Digit(&pos, 5, editU16_dat);
-	}
-	void EditUmSecU16_Set() {
-// 		mode = MODE_EDIT_UMSEC_U16;
-		key4->setAutoRepeatOff();
-		scr->Clear();
-		scr->pos = scr->SetPosition(0, 0);
-//		printf_P(selectParamTab[selectParametr_Idx]);
-		scr->String_P(PSTR(" :"));
-		scr->String_P(scr->SetPosition(0, 1), PSTR("     шт./мсек."));
-// 		EditUint16T_View();
-		CRITICAL_SECTION { timeOut = TIMEOUT_EDIT; }
-	}
-	void EditUmSecU16_Mns() {
-		key4->setAutoRepeatOn();
-		CRITICAL_SECTION { timeOut = TIMEOUT_EDIT; }
-		if (editU16_dat > editU16_min) {
-			editU16_dat--;
-		}
-		else editU16_dat = editU16_min;
-		EditUmSecU16_View();
-	}
-	void EditUmSecU16_Pls() {
-		key4->setAutoRepeatOn();
-		CRITICAL_SECTION { timeOut = TIMEOUT_EDIT; }
-		if (editU16_dat < editU16_max) {
-			editU16_dat++;
-		}
-		else editU16_dat = editU16_max;
-		EditUmSecU16_View();
-	}
-	void EditUmSecU16_Ent() {
-		CRITICAL_SECTION { timeOut = 0; }
-		key4->setAutoRepeatOn();
-//  		if (selectParametr_Idx == MN_ThresholdSpeedStockForwardStart)	eeprom_update_block(&editU16_dat, &VG::thresholdSpeedStockForward_start,	sizeof(int16_t));
-//  		if (selectParametr_Idx == MN_ThresholdSpeedStockForwardStop)	eeprom_update_block(&editU16_dat, &VG::thresholdSpeedStockForward_stop,		sizeof(int16_t));
-//  		if (selectParametr_Idx == MN_ThresholdSpeedStockBackStart)		eeprom_update_block(&editU16_dat, &VG::thresholdSpeedStockBack_start,		sizeof(int16_t));
-//  		if (selectParametr_Idx == MN_ThresholdSpeedStockBackStop)		eeprom_update_block(&editU16_dat, &VG::thresholdSpeedStockBack_stop,		sizeof(int16_t));
-		FnMenu(MODE_SELECT_PARAM, MENU_SETMODE);
-	}
-	// ==============================
-	void EditUnitU8_View() {
-		uint8_t pos = scr->SetPosition(0, 1);
-		scr->Digit(&pos, 4, editUint8T_dat);
-	}
-	void EditUnitU8_Set() {
-// 		mode = MODE_EDIT_UNIT_U8;
-		key4->setAutoRepeatOff();
-		scr->Clear();
-		scr->pos = scr->SetPosition(0, 0);
-//		printf_P(selectParamTab[selectParametr_Idx]);
-		scr->String_P(PSTR(" :"));
-//		scr->String_P(scr->SetPosition(0, 1), PSTR("    мсек."));
-		EditUnitU8_View();
-		CRITICAL_SECTION { timeOut = TIMEOUT_EDIT; }
-	}
-	void EditUnitU8_Mns() {
-		key4->setAutoRepeatOn();
-		CRITICAL_SECTION { timeOut = TIMEOUT_EDIT; }
-		if (editUint8T_dat > editUint8T_min)
-		{
-			editUint8T_dat--;
-		}
-		else editUint8T_dat = editUint8T_min;
-		EditUnitU8_View();
-	}
-	void EditUnitU8_Pls() {
-		key4->setAutoRepeatOn();
-		CRITICAL_SECTION { timeOut = TIMEOUT_EDIT; }
-		if (editUint8T_dat < editUint8T_max)
-		{
-			editUint8T_dat++;
-		}
-		else editUint8T_dat = editUint8T_max;
-		EditUnitU8_View();
-	}
-	void EditUnitU8_Ent() {
-		CRITICAL_SECTION { timeOut = 0; }
-		key4->setAutoRepeatOff();
-//  		if (selectParametr_Idx == MN_nCycleMax)	eeprom_update_block(&editU8_dat, &VG::n_cycle_max, sizeof(uint8_t));
-		FnMenu(MODE_SELECT_PARAM, MENU_SETMODE);
 	}
 	// ==============================
 	void Reboot_Set() {
@@ -672,9 +659,9 @@ namespace ns_menu
 	}
 	void SetPass_Set()
 	{
-// 		mode = MODE_SET_PASS;
+ 		mode = MODE_SET_PASS;
 		scr->Clear();
-//		printf_P(PSTR("новый пароль:"));
+		scr->String_P(scr->SetPosition(0, 0), PSTR("Новый пароль:"));
 		for (uint8_t i=0; i<5; i++) inPass[i] = 0;
 			curPosPass = 0;
 			Set_PassView();
@@ -723,16 +710,17 @@ namespace ns_menu
 			for (uint8_t i=0; i<5; i++)
 				eeprom_update_byte((uint8_t *)&eePass[i], inPass[i]);
 			scr->Clear();
-//			printf_P(PSTR("Новый пароль"));
+			scr->String_P(scr->SetPosition(0, 0), PSTR("Новый пароль"));
 			scr->pos = scr->SetPosition(0, 1);
-//			printf_P(PSTR("установлен"));
+			scr->String_P(scr->SetPosition(0, 1), PSTR("установлен"));
 			CRITICAL_SECTION { timeOut = 5000; }
-// 			FnMenu(MODE_TIMEOUT, MENU_SETMODE);
+ 			FnMenu(MODE_TIMEOUT, MENU_SETMODE);
 		}
 	}
 	// ==============================
 	void Timeout_Set() {
-// 		mode = MODE_TIMEOUT;
+ 		mode = MODE_TIMEOUT;
+		 selectParametr_Idx = MN_TimeIntegrD0;
 	}
 #include "menu_tab_fn.h"
 }

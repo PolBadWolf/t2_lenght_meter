@@ -222,12 +222,4 @@ void Lcd_hard::Interrupt()
 	blockRestart = 0;
 }
 
-// static const char* Lcd_hard::tabDecoder = 
-// {
-// 	0, 1 
-// };
-
-//int* Lcd_hard::a = new int {1, 2};
-
-
 #endif // CONF_LCD

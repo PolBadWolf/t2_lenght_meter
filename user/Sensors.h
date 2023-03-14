@@ -10,14 +10,22 @@
 #define __SENSORS_H__
 #include "path/path.h"
 
+#define		SENSORS_READY_NotReady		0
+#define		SENSORS_READY_Ready			1
+#define		SENSORS_READY_ErrorSn		-1
+#define		SENSORS_READY_BlockIzm		-2
+#define		SENSORS_READY_TimeOutCn		-3
+
 namespace ns_sensors
 {
 	extern int32_t		time_sensors[][2];
 	extern uint8_t		s_sensorInt[3];
 	extern uint8_t		statusWork;
 	extern bool			*sensorMass[3];
+	extern int32_t		s_count_timeOut;
 	extern int32_t		v_count;									// счетчик тиков
 	extern bool			blockirovka;								// блокировка замера внешним сигналом
+	
 	extern int16_t		s_sensorPosition[3];						// позитции сенсоров
 	
 	//

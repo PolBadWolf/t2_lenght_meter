@@ -19,17 +19,15 @@
 #define MODE_SELECT_PARAM		6				// выбор параметра в меню
 #define MODE_EDIT_UINT8T		7				// редактирование параметров мерность : uint8_t
 #define MODE_EDIT_UINT16T		8				// редактирование параметров мерность : uint16_t
+#define MODE_SET_PASS			9				// установка пароля
+#define MODE_TIMEOUT			10				// timeOut
 
-
-// #define MODE_EDIT_UMSEC_U16		7				// редактирование параметров в unit/mSec  uint16_t
-// #define MODE_EDIT_UNIT_U8		8				// редактирование параметров в разах uint8_t
 // #define MODE_REBOOT				9				// перезагрузка
-// #define MODE_SET_PASS			10				// установка пароля
-// #define MODE_TIMEOUT			11
 
 // ==================================================
 #define TIMEOUT_ENTER_PASS		30000
-#define TIMEOUT_EDIT			30000
+#define TIMEOUT_EDIT			60000
+#define TIMEOUT_SECSRC			15000
 
 
 

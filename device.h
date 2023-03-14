@@ -39,6 +39,9 @@
 #include "timers/watchdog.h"
 #endif // CONF_WATHDOG
 
+// #include "system/communication/Serial.h"
+#include "system/communication/RS_232.h"
+
 // #include "rs232.h"
 // #include "crc.h"
 // #include "vg.h"
@@ -78,6 +81,9 @@ namespace ns_device
 	extern tc_key4		*key;
 #endif // CONF_KEY4
 
+	
+	extern	Serial *rs232; // *************
+	
 	
 //	extern FILE			*strmScr;
 	//extern FILE			*rs232StdOut;

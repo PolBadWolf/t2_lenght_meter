@@ -168,6 +168,7 @@ namespace ns_rs232
 #endif	// MEGA 128
 
 #if defined (__AVR_ATmega16__)
+
 FILE* Init(rsBaud baud, rsParity parity, rsBit bit, rsBufferSize rxSize, rsBufferSize txSize)
 {
 	ns_rs232::bit = bit;
@@ -179,22 +180,22 @@ FILE* Init(rsBaud baud, rsParity parity, rsBit bit, rsBufferSize rxSize, rsBuffe
 	UCSRA_U2X = 1;
 	//
 	UCSRB = 0;
-	uint8_t tmp = 0;
 	// контроль четности
-	tmp |= __port(parity).bit0;
-	tmp |= __port(parity).bit1;
+	UCSRC_UPM0 = __port(parity).bit0;
+	UCSRC_UPM1 = __port(parity).bit1;
 	// установка битности
-	tmp |= __port(bit).bit0 << UCSZ0;
-	tmp |= __port(bit).bit1 << UCSZ1;
-	tmp |= __port(bit).bit2 << UCSZ2;
+	UCSRC_UCSZ0 = __port(bit).bit0;
+	UCSRC_UCSZ1 = __port(bit).bit1;
+	UCSRB_UCSZ2 = __port(bit).bit2;
 	// стоп битов 1: 0 << USBS0;
 	// стоп битов 2: 1 << USBS0;
-	tmp |= 1 << USBS;
-	UCSRC = tmp;// | (1 << URSEL);
+	UCSRC_USBS = 1;
+	UCSRC_URSEL = 1;
 	// enable UART reciver & transmitte, recive & transmitte interrupt
 	UCSRB_TXEN = 1;
 	UCSRB_RXEN = 1;
 	UCSRB_RXCIE = 1;
+	UCSRB_UDRIE = 1;
 	// init buffers
 	RxBuf = new uint8_t[rxSize];
 	rxBufMask = rxSize - 1;
@@ -218,12 +219,14 @@ ISR(USART_RXC_vect)
 ISR(USART_UDRE_vect)
 {
 	if (TxHead == TxTail)
-	UCSRB_UDRIE = 0;
+	{
+		UCSRB_UDRIE = 0;
+	}
 	else
 	{
-		UCSRB_TXB8 = 1;
 		UDR = TxBuf[TxTail];
 		TxTail = (TxTail + 1) & txBufMask;
+// 		UCSRB_TXCIE = 1;
 	}
 }
 // ==========================================
@@ -270,7 +273,7 @@ uint8_t SendByte(uint8_t *byte)
 	uint8_t tmpHead = (TxHead + 1) & txBufMask;
 	if (tmpHead == tmpTail)	return 0;
 	TxBuf[TxHead] = *byte;
-	UCSRB_UDRIE = 1;
+ 	UCSRB_UDRIE = 1;
 	CrcSumm(byte);
 	CRITICAL_SECTION
 	{
@@ -286,7 +289,7 @@ uint8_t SendByte(uint8_t byte)
 	uint8_t tmpHead = (TxHead + 1) & txBufMask;
 	if (tmpHead == tmpTail)	return 0;
 	TxBuf[TxHead] = byte;
-	UCSRB_UDRIE = 1;
+  	UCSRB_UDRIE = 1;
 	CrcSumm(&byte);
 	CRITICAL_SECTION
 	{
@@ -294,6 +297,9 @@ uint8_t SendByte(uint8_t byte)
 	}
 	return 1;
 }
+
+#undef UDR__enable
+
 #endif	// MEGA 16
 
 	// ==================================================
@@ -324,17 +330,18 @@ uint8_t SendByte(uint8_t byte)
 	void Digit(uint8_t len, int32_t digit)
 	{
 		if (digit < 0) { DigitZ(len, digit); return; }
-		char sss[24+2];
-		sss[len+1] = 0;
+// 		char sss[24+2];
+		char sss[len + 3];
+		sss[len + 1] = 0;
 		//len--;
 
 		uint8_t low = digit % 10;
 		sss[len] = '0' + low;
 		digit /= 10;
-		while(len-->0)
+		while(len-- > 0)
 		{
 			low = digit % 10;
-			if ( (low==0) && (digit==0) )
+			if ( (low == 0) && (digit == 0) )
 				sss[len] = ' ';
 			else
 				sss[len] = '0' + low;
@@ -344,7 +351,7 @@ uint8_t SendByte(uint8_t byte)
 	}
 	void DigitZ(uint8_t len, int32_t digit)
 	{
-		char sss[24+2];
+		char sss[len + 3];
 		volatile uint8_t por = 0;
 		if (digit < 0)
 		{

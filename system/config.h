@@ -19,7 +19,7 @@
 
 #define CONF_WATHDOG
 
-//#define CONF_RS232
+#define CONF_RS232
 // 
 // #if !defined(CONF_LCD) or !defined(CONF_KEY4)
 // #undef CONF_MENU

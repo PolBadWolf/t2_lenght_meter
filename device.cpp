@@ -8,7 +8,9 @@
 #include "config.h"
 //#include "path.h"
 #include "device.h"
-#include "communication/rs232.h"
+// #include "communication/rs232.h"
+
+#include "system/communication/RS_232.h"
 
 // ---пользовательское
 // #include "user/Core.h"
@@ -29,7 +31,7 @@ int xxx_c = 2;
 namespace ns_device
 {
 	FILE		*strmScr = nullptr;
-	FILE		*rs232StdOut = nullptr;
+// 	FILE		*rs232StdOut = nullptr;
 	// users
 //	
 #ifdef CONF_LCD
@@ -43,6 +45,8 @@ namespace ns_device
 	// Core
 	Core	*core;
 	StekTube *steckTube;
+	
+	Serial *rs232;
 
 	void Init()
 	{
@@ -60,10 +64,14 @@ namespace ns_device
  		key = new tc_key4;
 #endif
 
+
 #ifdef CONF_RS232
-	rs232StdOut = ns_rs232::Init(baud57600, DISABLE, bit8, size32, size64);
- 	ns_rs232::String_P(PSTR(" Start programm\n"));
+ 		rs232 = RS_232::init(baud19200, DISABLE, bit8, 8, 32);
+		rs232->string_P(PSTR(" Start programm\r\n"));
+		
+// 		ns_rs232::String_P(PSTR(" Start programm\n"));
 #endif // CONF_RS232
+
 
 #ifdef CONF_TIMER_LCDKEY
  		ns_LcdKeyTimer::Init();
@@ -114,14 +122,15 @@ namespace ns_device
 #endif // CONF_WATHDOG
 		// пользовательские
 		ns_sensors::Init();
+		// ********************************************** Длина СТЕКА ****************************
 		steckTube = new StekTube(5);
-		{
-			ns_device::steckTube->newTube( 9300, 1);
-			ns_device::steckTube->newTube(11825, 2);
-			ns_device::steckTube->newTube(10786, 3);
-			ns_device::steckTube->newTube(10252, 4);
-			ns_device::steckTube->newTube(10988, 5);
-		}
+// 		{
+// 			ns_device::steckTube->newTube( 9300, 1);
+// 			ns_device::steckTube->newTube(11825, 2);
+// 			ns_device::steckTube->newTube(10786, 3);
+// 			ns_device::steckTube->newTube(10252, 4);
+// 			ns_device::steckTube->newTube(10988, 5);
+// 		}
 		core = new Core(StekTube::newTube);
 	}
 // ========================================	

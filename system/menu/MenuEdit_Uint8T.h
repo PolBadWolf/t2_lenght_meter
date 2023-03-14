@@ -21,13 +21,14 @@ public:
 	uint8_t				max;
 protected:
 	CallBackEndEdit_u8	endEdit;
+	static MenuEdit_Uint8T		*obj;
 private:
 
 //functions
 public:
 	MenuEdit_Uint8T();
 // 	~MenuEdit_Uint8T();
-	void Init(uint8_t dat, uint8_t min, uint8_t max, char *strHead, char *string, CallBackEndEdit_u8 callBack);
+	void init(uint8_t dat, uint8_t min, uint8_t max, char *strHead, char *string, CallBackEndEdit_u8 callBack);
 	static void minus();
 	static void plus();
 	static void enter();

@@ -9,29 +9,7 @@
 #ifndef __STEKTUBE_H__
 #define __STEKTUBE_H__
 
-class StekTubeUnit
-{
-public:
- 	unsigned	char	n;
-	signed		int		lenght;
-	static StekTubeUnit* init(unsigned char nTubes)
-	{
-		StekTubeUnit *tubes = new StekTubeUnit[nTubes];
-		return tubes;
-	}
-	StekTubeUnit()
-	{
-		lenght = 0;
-		n = 0;
-	}
-	StekTubeUnit(unsigned int lenght, unsigned char n)
-	{
-		this->lenght	= lenght;
-		this->n			= n;
-	}
-protected:
-private:
-};
+#include "StekTubeUnit.h"
 
 class StekTube
 {
@@ -42,6 +20,7 @@ protected:
 	unsigned char	countTubesMax;
 	unsigned char	countTubes;
 	unsigned char	countTubesCycle;
+	static StekTube *obj;
 private:
 
 //functions
