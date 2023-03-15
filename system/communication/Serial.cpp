@@ -87,3 +87,10 @@ void Serial::digitZ(uint8_t len, int32_t digit)
 	//
 	string(stroka);
 }
+
+const char vEndLine[] PROGMEM = { "\r\n" };
+
+void Serial::endLine()
+{
+	string_P(vEndLine);
+}

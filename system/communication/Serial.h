@@ -21,6 +21,7 @@ public:
 	//
 	void string(const char *stroka);
 	void string_P(const char *stroka);
+	void endLine();
 	//
 	void digit(uint8_t len, int32_t digit);
 	void digitZ(uint8_t len, int32_t digit);
