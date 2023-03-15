@@ -39,9 +39,7 @@ void Core::mainCycle()
 		case SENSORS_READY_ErrorSn:
 			// ошибка работы сенсоров
 			{
-//  				scr_->flicker = true;
-// 				ns_device::scr->PutChar(15, 'S');
-//  				scr_->flicker = false;
+				sendRS.SendErrorSensor();
 				stat = CORESTAT_ERRSN;
 				lenghtTube = -1;
 			}
@@ -49,9 +47,7 @@ void Core::mainCycle()
 		case SENSORS_READY_BlockIzm:
 			// заблокирована работа измерителя
 			{
-// 				scr_->flicker = true;
-// 				ns_device::scr->PutChar(15, 'B');
-// 				scr_->flicker = false;
+				sendRS.SendChangeBlock();
 				stat = CORESTAT_BLOCK;
 				lenghtTube = -2;
 			}
@@ -67,6 +63,7 @@ void Core::mainCycle()
 				}
 				else
 				{
+					sendRS.SendErrorRender();
 					stat = CORESTAT_ERRIZ;
 				}
 			}

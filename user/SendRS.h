@@ -24,6 +24,9 @@ public:
 // 	~SendRS();
 //
 	void	SendLenght(uint16_t		lenght);
+	void	SendErrorSensor();
+	void	SendErrorRender();
+	void	SendChangeBlock();
 protected:
 private:
 	SendRS( const SendRS &c );

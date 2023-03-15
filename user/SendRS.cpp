@@ -27,3 +27,18 @@ void SendRS::SendLenght(uint16_t lenght)
 	rs->digit(5, lenght);
 	rs->endLine();
 }
+
+void SendRS::SendErrorSensor()
+{
+	rs->string_P(PSTR("Error sensors\r\n"));
+}
+
+void SendRS::SendErrorRender()
+{
+	rs->string_P(PSTR("Error render lenght\r\n"));
+}
+
+void SendRS::SendChangeBlock()
+{
+	rs->string_P(PSTR("The change is blocked\r\n"));
+}
