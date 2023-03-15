@@ -7,11 +7,9 @@
 
 
 #include "SendRS.h"
-// #include "../system/communication/rs232.h"
+#include "../device.h"
 
-//  #define rs	ns_rs232
-
-const char nextLine[] PROGMEM = { 0x0d, 0x0a };
+#define rs	ns_device::rs232
 
 // default constructor
 SendRS::SendRS()
@@ -25,7 +23,7 @@ SendRS::SendRS()
 
 void SendRS::SendLenght(uint16_t lenght)
 {
-// 	rs::String_P(PSTR("L="));
-// 	rs::Digit(5, lenght);
-// 	rs::String_P(nextLine);
+	rs->string_P(PSTR("L="));
+	rs->digit(5, lenght);
+	rs->endLine();
 }

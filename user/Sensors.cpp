@@ -142,8 +142,8 @@ namespace ns_sensors
 		ee_load();
 		sensor[0] = new Sensor(0, &DDRC, &PORTC, &PINC, 0, callBack);
 		sensor[1] = new Sensor(1, &DDRC, &PORTC, &PINC, 1, callBack);
-		sensor[2] = new Sensor(2, &DDRC, &PORTC, &PINC, 2, callBack);
-		blockIzmer = new Sensor(0, &DDRC, &PORTC, &PINC, 3, callBackBlock);
+		sensor[2] = new Sensor(2, &DDRC, &PORTC, &PINC, 3, callBack);
+		blockIzmer = new Sensor(0, &DDRC, &PORTC, &PINC, 4, callBackBlock);
 		initIntegr();
 		s_count = 0;
 		for (uint8_t i = 0; i < 3; i++)		sensorMass[i] = &sensor[i]->stat;

@@ -35,20 +35,14 @@ int main(void)
 #ifdef CONF_MENU
   	__delay_ms(1000);
 // 	rs_232->string_P(PSTR("\r\nHello world !!!\r\n"));
-// 	rs_232->digit(3, 25);
-// 	rs_232->string_P(PSTR("\r\n"));
-// 	rs_232->digit(3, 1999);
-// 	rs_232->string_P(PSTR("\r\n"));
-// 	rs_232->digit(4, 1999);
-// 	rs_232->string_P(PSTR("\r\n"));
-	rs_232->digit(3,-234);
-	rs_232->endLine();
-	rs_232->digit(5,-1234);
-	rs_232->endLine();
-	rs_232->digit(3, -789);
-	rs_232->endLine();
-	rs_232->digit(4, -789);
-	rs_232->endLine();
+// 	rs_232->digit(3,-234);
+// 	rs_232->endLine();
+// 	rs_232->digit(5,-1234);
+// 	rs_232->endLine();
+// 	rs_232->digit(3, -789);
+// 	rs_232->endLine();
+// 	rs_232->digit(4, -789);
+// 	rs_232->endLine();
 	while (true)
 	{
 		ns_device::MainCicle();

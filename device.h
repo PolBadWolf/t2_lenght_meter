@@ -42,10 +42,6 @@
 // #include "system/communication/Serial.h"
 #include "system/communication/RS_232.h"
 
-// #include "rs232.h"
-// #include "crc.h"
-// #include "vg.h"
-
 // users
 #include "user/Sensors.h"
 // ---пользовательское
