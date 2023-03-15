@@ -39,9 +39,9 @@ void Core::mainCycle()
 		case SENSORS_READY_ErrorSn:
 			// ошибка работы сенсоров
 			{
- 				scr_->flicker = true;
-				ns_device::scr->PutChar(15, 'S');
- 				scr_->flicker = false;
+//  				scr_->flicker = true;
+// 				ns_device::scr->PutChar(15, 'S');
+//  				scr_->flicker = false;
 				stat = CORESTAT_ERRSN;
 				lenghtTube = -1;
 			}
@@ -49,9 +49,9 @@ void Core::mainCycle()
 		case SENSORS_READY_BlockIzm:
 			// заблокирована работа измерителя
 			{
-				scr_->flicker = true;
-				ns_device::scr->PutChar(15, 'B');
-				scr_->flicker = false;
+// 				scr_->flicker = true;
+// 				ns_device::scr->PutChar(15, 'B');
+// 				scr_->flicker = false;
 				stat = CORESTAT_BLOCK;
 				lenghtTube = -2;
 			}
