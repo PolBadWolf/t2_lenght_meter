@@ -423,9 +423,8 @@ namespace ns_menu
 			else
 			{	// пароль не верен
 				scr->Clear();
-//				printf_P(PSTR("Ошибка ввода"));
-				scr->pos = scr->SetPosition(0, 1);
-//				printf_P(PSTR("пароля"));
+				scr->String_P(scr->SetPosition(0, 0), PSTR("Ошибка ввода"));
+				scr->String_P(scr->SetPosition(0, 1), PSTR("пароля"));
 				CRITICAL_SECTION	{timeOut = 5000;}
 				//SetMode(TIMEOUT_TO_MAIN);
 				FnMenu(MODE_TIMEOUT_TO_MAIN, MENU_SETMODE);

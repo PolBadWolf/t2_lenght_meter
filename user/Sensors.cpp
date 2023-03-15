@@ -254,6 +254,7 @@ namespace ns_sensors
 		if (time_sensors[1][0] == 0)  return -3;
 		if (time_sensors[1][1] == 0)  return -4;
 		if (time_sensors[2][1] == 0)  return -5;
+		if (time_sensors[0][0] < time_sensors[1][1])	return -6;
 		// определение базы
 		int16_t baseMainSmall = s_sensorPosition[2] - s_sensorPosition[1];
 		int16_t baseMainBig = s_sensorPosition[2] - s_sensorPosition[0];
