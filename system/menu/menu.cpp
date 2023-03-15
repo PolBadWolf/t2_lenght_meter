@@ -620,8 +620,7 @@ namespace ns_menu
 	}
 	// ==============================
 	void Reboot_Set() {
-// 		mode = MODE_REBOOT;
-		//flReboot = 1;
+		mode = MODE_REBOOT;
 		scr->Clear();
 		scr->pos = scr->SetPosition(4, 0);
 	}
@@ -698,7 +697,6 @@ namespace ns_menu
 		key4->setAutoRepeatOff();
 		if (curPosPass < 4)
 		{
-			//char t = inPass[curPosPass];
 			curPosPass++;
 			inPass[curPosPass] = 0;
 			EnterPass_View();

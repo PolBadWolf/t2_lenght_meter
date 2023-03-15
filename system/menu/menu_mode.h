@@ -21,8 +21,7 @@
 #define MODE_EDIT_UINT16T		8				// редактирование параметров мерность : uint16_t
 #define MODE_SET_PASS			9				// установка пароля
 #define MODE_TIMEOUT			10				// timeOut
-
-// #define MODE_REBOOT				9				// перезагрузка
+#define MODE_REBOOT				11				// перезагрузка
 
 // ==================================================
 #define TIMEOUT_ENTER_PASS		30000

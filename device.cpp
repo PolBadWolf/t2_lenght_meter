@@ -6,32 +6,15 @@
  */ 
 
 #include "config.h"
-//#include "path.h"
 #include "device.h"
-// #include "communication/rs232.h"
-
-#include "system/communication/RS_232.h"
-
-// ---пользовательское
-// #include "user/Core.h"
-// #include "user/StekTube.h"
-// ------------------
-
 
 #ifdef CONF_LCD
 #include "indication/Lcd_hard.h"
-#endif // CONF_LCD
 #define SCR		ns_device::scr
-
-//uint16_t acp_div = 0;
-
-// char xxx = 0;
-// int xxx_c = 2;
+#endif // CONF_LCD
 
 namespace ns_device
 {
-// 	FILE		*strmScr = nullptr;
-// 	FILE		*rs232StdOut = nullptr;
 	// users
 //	
 #ifdef CONF_LCD
@@ -46,7 +29,9 @@ namespace ns_device
 	Core	*core;
 	StekTube *steckTube;
 	
+#ifdef CONF_RS232
 	Serial *rs232;
+#endif // CONF_RS232
 
 	void Init()
 	{
@@ -70,8 +55,6 @@ namespace ns_device
 #ifdef CONF_RS232
  		rs232 = RS_232::init(baud19200, DISABLE, bit8, 8, 32);
 		rs232->string_P(PSTR(" Start programm\r\n"));
-		
-// 		ns_rs232::String_P(PSTR(" Start programm\n"));
 #endif // CONF_RS232
 
 
@@ -83,35 +66,6 @@ namespace ns_device
 		ns_timerMain::Init();
 #endif // CONF_TIMER_MAIN
 
-	
-// 		ns_rs232::String_P(PSTR(" Start programm"));
-		// ====== users ======
-		// переключатель режима
-// 		switchMode = new SwitchMode(
-// 			&DDRC, &PORTC, &PINC, 0,
-// 			&DDRC, &PORTC, &PINC, 1,
-// 			// время переключеня
-// 			eeprom_read_word(&VG::switch1_delay) , eeprom_read_word(&VG::switch2_delay),
-// 			(TypeFunct1 *)&Sw_Event
-//		);
-		// ======================
-		// АЦП
-// 		eeprom_read_block(&VG::adcCore_speedLenghtAve_ram, &VG::adcCore_speedLenghtAve, sizeof(uint16_t));
-// 		eeprom_read_block(&VG::adcCore_speedLenghtDlt_ram, &VG::adcCore_speedLenghtDlt, sizeof(uint8_t));
-// 		adcCore = new AdcCore(
-// 			// длина буффера усреднения для вычисления скорости
-// 			VG::adcCore_speedLenghtAve_ram,
-// 			// длина буффера дельты для нахождения скорости
-// 			VG::adcCore_speedLenghtDlt_ram,
-// 			// длина буффера усреднения данных для архивации дистанции
-// 			eeprom_read_byte(&VG::adcCore_distanceLenghtAve),
-// 			// длина буффера усреднения данных для архивации услилия
-// 			eeprom_read_byte(&VG::adcCore_forceLenghtAve)
-// 		);
-		// общее ядро
-//		core = new Core();
-		// режим работы
-//		ns_ModeWorks::Init();
 		// =====================================================
 		// меню инициировать последним, когда все объекты созданы
 
@@ -120,19 +74,12 @@ namespace ns_device
 #endif // CONF_MENU
 		// пес
 #ifdef CONF_WATHDOG
-//		ns_watchdog::Init(WDTO_2S);
+		ns_watchdog::Init(WDTO_2S);
 #endif // CONF_WATHDOG
 		// пользовательские
 		ns_sensors::Init();
 		// ********************************************** Длина СТЕКА ****************************
 		steckTube = new StekTube(15);
-// 		{
-// 			ns_device::steckTube->newTube( 9300, 1);
-// 			ns_device::steckTube->newTube(11825, 2);
-// 			ns_device::steckTube->newTube(10786, 3);
-// 			ns_device::steckTube->newTube(10252, 4);
-// 			ns_device::steckTube->newTube(10988, 5);
-// 		}
 		core = new Core(StekTube::newTube);
 	}
 // ========================================	
@@ -147,59 +94,11 @@ namespace ns_device
 #ifdef CONF_MENU
  		ns_menu::Interrupt();
 #endif // CONF_MENU
-		// опрос переключателя режима работы (flNewSw = 1 - новые данные ; switchPos = switchMode->Status();)
-//		switchMode->Interrupt();
-//		adcCore->start();
-//		ns_ModeWorks::Interrupt();
 	}
 // =======================================
-// 	uint16_t ss_count = 0;
-// 	uint8_t  ss_sec = 0;
-// 	uint8_t  ss_min = 0;
-// 	uint8_t  ss_chs = 0;
 	void Timer_Usr()
 	{
-#ifndef CONF_MENU
-// 		bool ss_event = false;
-// 		if (++ss_count == 1000)
-// 		{
-// 			ss_count = 0;
-// 			ss_event = true;
-// 			if (++ss_sec == 60)
-// 			{
-// 				ss_sec = 0;
-// 				if (++ss_min == 60)
-// 				{
-// 					ss_min = 0;
-// 					if (++ss_chs == 24)
-// 					{
-// 						ss_chs = 0;
-// 					}
-// 				}
-// 			}
-// 		}
-// 		if (ss_event)
-// 		{
-// 			SCR->DigitZ(23, 2, ss_chs);
-// 			SCR->DigitZ(26, 2, ss_min);
-// 			SCR->DigitZ(29, 2, ss_sec);
-// 			SCR->flicker = true;
-// 			SCR->PutChar(25, ':');
-// 			SCR->PutChar(28, ':');
-// 			SCR->flicker = false;
-// 		}
-#endif // CONF_MENU
-#ifdef CONF_MENU
-#endif // CONF_MENU
-// 		if (--preDiv == 0)
-// 		{
-// 			preDiv = PREDIV_ARCHIVE;
-// 			// сбор данных с АЦП, передача на компьютер
-// 			if (core) core->Interrupt();
-// 		}
-		// счет прерываний (тиков) за измерение
-//		ns_ModeWorks::InterruptTick();
-		// 
+		// прерывание для измерение
 		ns_sensors::interrupt();
 	}
 // ======================= ******************** ==================
@@ -208,9 +107,11 @@ namespace ns_device
 #ifdef CONF_MENU
 		ns_menu::Main();
 #endif // CONF_MENU
-		// заглушка
-// 		switchMode->MainCicle();
-// 		ns_watchdog::ResetCount();
+
+#ifdef CONF_WATHDOG
+		ns_watchdog::ResetCount();
+#endif // CONF_WATHDOG
+
 		ns_sensors::mainCicle();
 		core->mainCycle();
 	}

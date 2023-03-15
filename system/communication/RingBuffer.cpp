@@ -7,7 +7,6 @@
 
 
 #include "RingBuffer.h"
-// #include "IncFile1.h"
 
 // default constructor
 RingBuffer::RingBuffer(uint8_t		*buffer, uint8_t size)

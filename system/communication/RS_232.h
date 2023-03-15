@@ -9,6 +9,10 @@
 #ifndef __RS_232_H__
 #define __RS_232_H__
 
+#include "config.h"
+
+#ifdef CONF_RS232
+
 #include "Serial.h"
 #include "RingBuffer.h"
 
@@ -39,4 +43,5 @@ private:
 
 }; //RS_232
 
+#endif // CONF_RS232
 #endif //__RS_232_H__

@@ -10,10 +10,6 @@
 
 #include "config.h"
 
-//#ifndef __PATH_H_
-//#include "path.h"
-//#endif
-
 #ifdef CONF_TIMER_LCDKEY
 #include "timers/LcdKey_Timer.h"
 #endif // CONF_TIMER_LCDKEY
@@ -39,33 +35,15 @@
 #include "timers/watchdog.h"
 #endif // CONF_WATHDOG
 
-// #include "system/communication/Serial.h"
+#ifdef CONF_RS232
 #include "system/communication/RS_232.h"
+#endif // CONF_RS232
 
 // users
 #include "user/Sensors.h"
 // ---пользовательское
 #include "user/Core.h"
 #include "user/StekTube.h"
-// ------------------
-// #include "users\AveragingSliding.h"
-// #include "users\LoadVars.h"
-// #include "users\SwitchMode.h"
-// #include "users\ModeWorks.h"
-// #include "users\Acp.h"
-// #include "users\AcpNorm.h"
-// #include "users\AcpCallBack.h"
-// #include "users\Core.h"
-// #include "users\Adc.h"
-// #include "users\DistanceSpeed.h"
-// #include "users\AdcCore.h"
-
-
-// 
-// #if defined(CONF_LCD)
-// #define scr	ns_lcd
-// #endif
-#define PREDIV_ARCHIVE	5
 
 namespace ns_device
 {
@@ -77,20 +55,12 @@ namespace ns_device
 	extern tc_key4		*key;
 #endif // CONF_KEY4
 
+#ifdef CONF_RS232
+	extern	Serial *rs232;
+#endif // CONF_RS232
 	
-	extern	Serial *rs232; // *************
 	
-	
-//	extern FILE			*strmScr;
-	//extern FILE			*rs232StdOut;
 	//users
-//	extern SwitchMode	*switchMode;
-// 	extern AcpNorm		*acpNormDistance;
-// 	extern AcpNorm		*acpNormVes;
-//	extern Core			*core;
-	
-//	extern AdcCore* adcCore;
-
 // ======================
 	// Core
 	extern Core	*core;
