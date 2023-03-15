@@ -65,5 +65,25 @@ void Serial::digit(uint8_t len, int32_t digit)
 
 void Serial::digitZ(uint8_t len, int32_t digit)
 {
-	
+	char stroka_n[len + 1];
+	char *stoka	= stroka_n + len;
+	*stoka = 0;
+	uint8_t low;
+	//
+	if (digit < 0)
+	{
+		stroka_n[0] = '-';
+		len--;
+		digit = -digit;
+	}
+	//
+	while (len > 0)
+	{
+		len--;
+		stoka--;
+		low = digit % 10;
+		digit /= 10;
+		*stoka = '0' + low;
+	}
+	string(stroka_n);
 }
