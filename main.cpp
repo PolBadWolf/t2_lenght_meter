@@ -14,23 +14,16 @@
 #include "user/Sensors.h"
 #define STECK_TUBE ns_device::steckTube
 
-#include "DeB.h" // ***********
+// #include "DeB.h" // ***********
 
 // #include "system/communication/rs232.h"
 
 #define rs_232	ns_device::rs232
 
-signed char normX(signed char x, signed char min, signed char max)
-{
-	while (x < min)		x += max;
-	while (x >= max)	x -= max;
-	return x;
-}
-
 int main(void)
 {
-	DeB *deb =  new DeB();
-	deb->main();
+// 	DeB *deb =  new DeB();
+// 	deb->main();
 	// ====================
 // 	StekTube *steck = new StekTube(3);
 // 	StekTube::newTube(5500);
@@ -40,13 +33,17 @@ int main(void)
 	ns_device::Init();
 	sei();
 #ifdef CONF_MENU
- 	__delay_ms(1000);
-	rs_232->string_P(PSTR("\r\nHello world !!!\r\n"));
-	rs_232->digit(3, 25);
+  	__delay_ms(1000);
+// 	rs_232->string_P(PSTR("\r\nHello world !!!\r\n"));
+// 	rs_232->digit(3, 25);
+// 	rs_232->string_P(PSTR("\r\n"));
+// 	rs_232->digit(3, 1999);
+// 	rs_232->string_P(PSTR("\r\n"));
+// 	rs_232->digit(4, 1999);
+// 	rs_232->string_P(PSTR("\r\n"));
+	rs_232->digit(3,-234);
 	rs_232->string_P(PSTR("\r\n"));
-	rs_232->digit(3, 1999);
-	rs_232->string_P(PSTR("\r\n"));
-	rs_232->digit(4, 1999);
+	rs_232->digit(5,-1234);
 	rs_232->string_P(PSTR("\r\n"));
 	rs_232->digit(3, -789);
 	rs_232->string_P(PSTR("\r\n"));

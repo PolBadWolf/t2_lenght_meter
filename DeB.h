@@ -16,9 +16,6 @@ class DeB
 {
 //variables
 public:
-	signed char x;
-	StekTubeUnit units[2];
-	StekTubeUnit unit;
 protected:
 private:
 

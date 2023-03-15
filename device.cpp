@@ -25,12 +25,12 @@
 
 //uint16_t acp_div = 0;
 
-char xxx = 0;
-int xxx_c = 2;
+// char xxx = 0;
+// int xxx_c = 2;
 
 namespace ns_device
 {
-	FILE		*strmScr = nullptr;
+// 	FILE		*strmScr = nullptr;
 // 	FILE		*rs232StdOut = nullptr;
 	// users
 //	
@@ -54,9 +54,11 @@ namespace ns_device
 		scr_vn = new Lcd_hard();
 		scr = (Lcd *)scr_vn;
 #ifdef CONF_LCD_24
-		strmScr = scr_vn->Init(scr_vn, 24);
+// 		strmScr = scr_vn->Init(scr_vn, 24);
+		scr_vn->Init(scr_vn, 24);
 #else
-		strmScr = scr_vn->Init(scr_vn, 16);
+// 		strmScr = scr_vn->Init(scr_vn, 16);
+		scr_vn->Init(scr_vn, 16);
 #endif // CONF_LCD_24
 #endif // CONF_LCD
 
@@ -123,7 +125,7 @@ namespace ns_device
 		// пользовательские
 		ns_sensors::Init();
 		// ********************************************** Длина СТЕКА ****************************
-		steckTube = new StekTube(5);
+		steckTube = new StekTube(15);
 // 		{
 // 			ns_device::steckTube->newTube( 9300, 1);
 // 			ns_device::steckTube->newTube(11825, 2);
@@ -151,10 +153,10 @@ namespace ns_device
 //		ns_ModeWorks::Interrupt();
 	}
 // =======================================
-	uint16_t ss_count = 0;
-	uint8_t  ss_sec = 0;
-	uint8_t  ss_min = 0;
-	uint8_t  ss_chs = 0;
+// 	uint16_t ss_count = 0;
+// 	uint8_t  ss_sec = 0;
+// 	uint8_t  ss_min = 0;
+// 	uint8_t  ss_chs = 0;
 	void Timer_Usr()
 	{
 #ifndef CONF_MENU
