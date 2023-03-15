@@ -274,7 +274,6 @@ namespace ns_menu
 	}
 	// ***************************** просмотр стека труб *****************************
 	uint8_t var_steckTube_cur;
-	uint8_t var_steckTube_max;
 	void steckTube_vDat()
 	{
 		StekTubeUnit unit1, unit2;
@@ -296,8 +295,6 @@ namespace ns_menu
 		CRITICAL_SECTION { timeOut = 0; }
 		key4->setAutoRepeatOff();		// отключить быстрый повтор кнопок
 		var_seclectScr_nScr = MODE_STECK_TUBE;
-// 		var_steckTube_max = steck->getCountSteckMax();
-		var_steckTube_max = steck->getCountSteckFull();
 		var_steckTube_cur = 0;
 		steckTube_vDat();
 	}
@@ -310,7 +307,7 @@ namespace ns_menu
 
 	void steckTube_plus()
 	{
-		if (var_steckTube_cur < (var_steckTube_max - 2))	var_steckTube_cur++;
+		if (var_steckTube_cur < (steck->getCountSteckFull() - 2))	var_steckTube_cur++;
 		steckTube_vDat();
 	}
 	
