@@ -182,7 +182,7 @@ namespace ns_sensors
 		blockIzmer->interrupt();
 		blockirovka |= blockIzmer->stat;
 		// Time Out
-		if (s_count > 40000)
+		if (s_count >= 20000)
 		{
 				statusWork = 0;
 				s_count = s_count_timeOut;
@@ -239,9 +239,9 @@ namespace ns_sensors
 	// ====================
 	int getReadyData()
 	{
-		if (!blockSensor)	return		SENSORS_READY_NotReady;
-		if (blockirovka)	return		SENSORS_READY_BlockIzm;
 		if (countTimeOut)	return		SENSORS_READY_TimeOutCn;
+		if (blockirovka)	return		SENSORS_READY_BlockIzm;
+		if (!blockSensor)	return		SENSORS_READY_NotReady;
 		if (	(time_sensors[2][1] > time_sensors[1][1])
 			&&	(time_sensors[1][1] > time_sensors[0][1])
 			)	return SENSORS_READY_Ready;

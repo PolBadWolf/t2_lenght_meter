@@ -161,14 +161,14 @@ namespace ns_menu
 			unit = steck->getLenghtTube(steckIndx - 1);
 			if (unit.n > 0 && unit.n < 100)
 			{
-				scr->Digit ( 7, 2, unit.n);
-				scr->DigitZ(10, 5, unit.lenght);
+				scr->Digit ( 6, 2, unit.n);
+				scr->DigitZ( 9, 5, unit.lenght);
 			}
 			unit = steck->getLenghtTube(steckIndx);
 			if (unit.n > 0 && unit.n < 100)
 			{
-				scr->Digit (23, 2, unit.n);
-				scr->DigitZ(26, 5, unit.lenght);
+				scr->Digit (22, 2, unit.n);
+				scr->DigitZ(25, 5, unit.lenght);
 			}
 			switch (ns_device::core->getStat())
 			{
@@ -302,12 +302,14 @@ namespace ns_menu
 	void steckTube_minus()
 	{
 		if (var_steckTube_cur > 0)	var_steckTube_cur--;
+		else		var_steckTube_cur = steck->getCountSteckFull() - 2;
 		steckTube_vDat();
 	}
 
 	void steckTube_plus()
 	{
 		if (var_steckTube_cur < (steck->getCountSteckFull() - 2))	var_steckTube_cur++;
+		else		var_steckTube_cur = 0;
 		steckTube_vDat();
 	}
 	

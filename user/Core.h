@@ -32,6 +32,7 @@ protected:
 	unsigned char	count99;
 private:
 	SendRS			sendRS;
+	bool			trigMessError;
 
 //functions
 public:

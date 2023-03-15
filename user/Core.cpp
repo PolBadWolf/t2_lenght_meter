@@ -19,6 +19,7 @@ Core::Core(NewTubeCallBack newTubeCallBack)
 	stat = CORESTAT_NONE;
 	ns_sensors::startOfDataCollection();
 	count99 = ns_device::steckTube->getLenghtTube(ns_device::steckTube->getCountSteckCurrent() - 1).n;
+	trigMessError = false;
 } //Core
 
 // default destructor
@@ -34,12 +35,14 @@ void Core::mainCycle()
 	{
 		case SENSORS_READY_NotReady:
 			// нет готовности
+			trigMessError = false;
 			return;
 			break;
 		case SENSORS_READY_ErrorSn:
 			// ошибка работы сенсоров
 			{
-				sendRS.SendErrorSensor();
+				if (!trigMessError)		sendRS.SendErrorSensor();
+				trigMessError = true;
 				stat = CORESTAT_ERRSN;
 				lenghtTube = -1;
 			}
@@ -47,9 +50,18 @@ void Core::mainCycle()
 		case SENSORS_READY_BlockIzm:
 			// заблокирована работа измерителя
 			{
-				sendRS.SendChangeBlock();
+				if (!trigMessError)		sendRS.SendChangeBlock();
+				trigMessError = true;
 				stat = CORESTAT_BLOCK;
 				lenghtTube = -2;
+			}
+			break;
+		case SENSORS_READY_TimeOutCn:
+			{
+				if (!trigMessError)		sendRS.SendErrorSensor();
+				trigMessError = true;
+				stat = CORESTAT_ERRSN;
+				lenghtTube = -1;
 			}
 			break;
 		default:
@@ -60,6 +72,7 @@ void Core::mainCycle()
 				if (lenghtTube > 6000)
 				{
 					stat = CORESTAT_OK;
+					trigMessError = false;
 				}
 				else
 				{
@@ -73,12 +86,12 @@ void Core::mainCycle()
 	ns_sensors::startOfDataCollection();
 	currentLenghtTube = lenghtTube;
 	// измерение прошло
-	newData = 0xff;
 	if (stat != CORESTAT_OK)		return;
+	newData = 0xff;
 	if (++count99 > 99)		count99 = 1;
 	if (count99 < 1)		count99 = 1;
 	newTubeCallBack(currentLenghtTube, count99);
-	sendRS.SendLenght(currentLenghtTube);
+	sendRS.SendLenght(count99, currentLenghtTube);
 }
 
 signed char	Core::getStat()

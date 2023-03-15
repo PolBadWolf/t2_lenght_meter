@@ -23,7 +23,7 @@ public:
 	SendRS();
 // 	~SendRS();
 //
-	void	SendLenght(uint16_t		lenght);
+	void	SendLenght(int8_t nTubes, uint16_t		lenght);
 	void	SendErrorSensor();
 	void	SendErrorRender();
 	void	SendChangeBlock();

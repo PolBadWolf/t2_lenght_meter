@@ -21,9 +21,11 @@ SendRS::SendRS()
 // {
 // } //~SendRS
 
-void SendRS::SendLenght(uint16_t lenght)
+void SendRS::SendLenght(int8_t nTubes, uint16_t lenght)
 {
-	rs->string_P(PSTR("L="));
+	rs->string_P(PSTR("L"));
+	rs->digit(2, nTubes);
+	rs->string_P(PSTR("="));
 	rs->digit(5, lenght);
 	rs->endLine();
 }
