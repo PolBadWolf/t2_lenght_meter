@@ -7,9 +7,6 @@
 
 
 #include "Sensor.h"
-// 
-// #include "../device.h"
-// #define  SCR	ns_device::scr
 
 // default constructor
 Sensor::Sensor(unsigned char n_sensor, volatile unsigned char* ddr, volatile unsigned char* port, volatile unsigned char* s_pin, unsigned char nBit, SensorCallBack callBack)

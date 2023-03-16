@@ -27,13 +27,13 @@ namespace ns_sensors
 	bool		blockirovka;									// блокировка замера внешним сигналом
 	bool		countTimeOut;									//
 	// =====
-	int32_t		s_count_timeOut			= 5000;
+	int32_t		s_count_timeOut;
 	int32_t		e_count_timeOut EEMEM	= 5000;
 	//
 	uint8_t		s_sensorInt[3];									// время интеграции замера на датчиках
 	uint8_t		e_sensorInt[3] EEMEM	= {20, 20, 20};
 	//
-	int16_t		s_sensorPosition[3]			= {0, 1000, 11045};			// позитции сенсоров
+	int16_t		s_sensorPosition[3];									// позитции сенсоров
 	int16_t		e_sensorPosition[3] EEMEM	= {0, 1000, 11045};			// позитции сенсоров
 	// =========================
 	Sensor		*blockIzmer;
