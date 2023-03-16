@@ -50,9 +50,11 @@ void SendRS::SendErrorRender(uint16_t lenght)
 #endif // CONF_RS232
 }
 
-void SendRS::SendChangeBlock()
+void SendRS::SendChangeBlock(uint16_t lenght)
 {
 #ifdef CONF_RS232
-	rs->string_P(PSTR("The change is blocked\r\n"));
+	rs->string_P(PSTR("The change is blocked ("));
+	rs->digit(5, lenght);
+	rs->string_P(PSTR(")\r\n"));
 #endif // CONF_RS232
 }

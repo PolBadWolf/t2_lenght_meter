@@ -81,7 +81,7 @@ void Core::mainCycle()
 	if (stat != CORESTAT_OK)		return;
 	if (ns_sensors::blockirovka)
 	{
-		if (!trigMessError)		sendRS.SendChangeBlock();
+		if (!trigMessError)		sendRS.SendChangeBlock(currentLenghtTube);
 		trigMessError = true;
 		stat = CORESTAT_BLOCK;
 	}
