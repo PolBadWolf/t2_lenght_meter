@@ -41,10 +41,12 @@ void SendRS::SendErrorSensor()
 #endif // CONF_RS232
 }
 
-void SendRS::SendErrorRender()
+void SendRS::SendErrorRender(uint16_t lenght)
 {
 #ifdef CONF_RS232
-	rs->string_P(PSTR("Error render lenght\r\n"));
+	rs->string_P(PSTR("Error render lenght ("));
+	rs->digit(5, lenght);
+	rs->string_P(PSTR(")\r\n"));
 #endif // CONF_RS232
 }
 

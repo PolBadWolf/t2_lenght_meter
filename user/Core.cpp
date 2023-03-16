@@ -60,15 +60,15 @@ void Core::mainCycle()
 			if (lenghtTube == 0)
 			{
 				lenghtTube = ns_sensors::renderLenght();
-				if (lenghtTube > 6000)
+				if (lenghtTube < 6000 || lenghtTube > 12500)
 				{
-					stat = CORESTAT_OK;
-					trigMessError = false;
+					sendRS.SendErrorRender(lenghtTube);
+					stat = CORESTAT_ERRIZ;
 				}
 				else
 				{
-					sendRS.SendErrorRender();
-					stat = CORESTAT_ERRIZ;
+					stat = CORESTAT_OK;
+					trigMessError = false;
 				}
 			}
 			break;

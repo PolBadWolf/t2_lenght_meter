@@ -25,7 +25,7 @@ public:
 //
 	void	SendLenght(int8_t nTubes, uint16_t		lenght);
 	void	SendErrorSensor();
-	void	SendErrorRender();
+	void	SendErrorRender(uint16_t lenght);
 	void	SendChangeBlock();
 protected:
 private:

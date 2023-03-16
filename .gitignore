@@ -33,3 +33,5 @@
 
 Debug/*.*
 Debug/Makefile
+Release/*.*
+Release/Makefile
