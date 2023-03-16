@@ -47,15 +47,6 @@ void Core::mainCycle()
 				lenghtTube = -1;
 			}
 			break;
-		case SENSORS_READY_BlockIzm:
-			// заблокирована работа измерителя
-			{
-				if (!trigMessError)		sendRS.SendChangeBlock();
-				trigMessError = true;
-				stat = CORESTAT_BLOCK;
-				lenghtTube = -2;
-			}
-			break;
 		case SENSORS_READY_TimeOutCn:
 			{
 				if (!trigMessError)		sendRS.SendErrorSensor();
@@ -85,13 +76,23 @@ void Core::mainCycle()
 	// следущй цикл
 	ns_sensors::startOfDataCollection();
 	currentLenghtTube = lenghtTube;
+	newData |= 1 << 0;
 	// измерение прошло
 	if (stat != CORESTAT_OK)		return;
+	if (ns_sensors::blockirovka)
+	{
+		if (!trigMessError)		sendRS.SendChangeBlock();
+		trigMessError = true;
+		stat = CORESTAT_BLOCK;
+	}
+	else
+	{
+		if (++count99 > 99)		count99 = 1;
+		if (count99 < 1)		count99 = 1;
+		newTubeCallBack(currentLenghtTube, count99);
+		sendRS.SendLenght(count99, currentLenghtTube);
+	}
 	newData = 0xff;
-	if (++count99 > 99)		count99 = 1;
-	if (count99 < 1)		count99 = 1;
-	newTubeCallBack(currentLenghtTube, count99);
-	sendRS.SendLenght(count99, currentLenghtTube);
 }
 
 signed char	Core::getStat()

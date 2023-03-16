@@ -240,7 +240,6 @@ namespace ns_sensors
 	int getReadyData()
 	{
 		if (countTimeOut)	return		SENSORS_READY_TimeOutCn;
-		if (blockirovka)	return		SENSORS_READY_BlockIzm;
 		if (!blockSensor)	return		SENSORS_READY_NotReady;
 		if (	(time_sensors[2][1] > time_sensors[1][1])
 			&&	(time_sensors[1][1] > time_sensors[0][1])
@@ -272,35 +271,24 @@ namespace ns_sensors
 		//
 		int32_t timeRender					= time_sensors[1][0] - time_sensors[0][0];
 
-//   		SCR->DigitM(16, 4, time_sensors[0][0]);
-//  		SCR->DigitM(21, 4, time_sensors[1][0]);
-//  		SCR->DigitM(26, 5, time_sensors[2][1]);
-// 
-//  		SCR->DigitM(0, 5, timeRender);
-
-		
 		// до счет в минус на малой базе
 		if ( (time_sensors[2][1] >= time_sensors[1][0]) && (time_sensors[1][0] >= time_sensors[0][0]))
 		{
-// 			SCR->PutChar(15, '1');
 			return baseMainSmall - (baseRender * timeRenderMinusBaseSmall / timeRender);
 		}
 		// до счет в плюс на большой базе
 		if ( time_sensors[0][0] >= time_sensors[2][1] )
 		{
-// 			SCR->PutChar(15, '4');
 			return baseMainBig + (baseRender * timeRenderPlusBaseBig / timeRender);
 		}
 		// до счет в плюс на малой базе
 		if ( timeRenderMinusBaseBig >= timeRenderPlusBaseSmall )
 		{
-// 			SCR->PutChar(15, '2');
 			return baseMainSmall + (baseRender * timeRenderPlusBaseSmall / timeRender);
 		}
 		// до счет в минус на большой базе
 		if ( timeRenderPlusBaseSmall >= timeRenderMinusBaseBig )
 		{
-// 			SCR->PutChar(15, '3');
 			return baseMainBig - (baseRender * timeRenderMinusBaseBig / timeRender);
 		}
 		return -1;
@@ -326,7 +314,6 @@ namespace ns_sensors
 	}
 	void mainCicle()
 	{
-//   		SCR->DigitZ(19, 6, s_count);
 	}
 	unsigned char getStatusWork()
 	{
