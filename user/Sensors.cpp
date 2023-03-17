@@ -71,35 +71,49 @@ namespace ns_sensors
 	// ==========
 	void callBack_s0(bool stat)
 	{
-		bool sensorStat;
-		sensorStat = *sensorMass[0];
-		//
-		// начало измерения
-		if ( sensorStat && ((statusWork & (1 << 0)) == 0))
-		{
-			if (!(*sensorMass[1]) && !(*sensorMass[2]))
-			{
+		bool sensorStat = *sensorMass[0];
+		if ( sensorStat)
+		{	// наезд на датчик
+			if ( ((statusWork & (1 << 0)) == 0) && !(*sensorMass[1]) && !(*sensorMass[2]))
+			{	// начало измерения
 				statusWork |= 1 << 0;
 				s_count = 0;
 				time_sensors[0][1] = s_count;
 				countTimeOut = false;
 			}
 		}
-		// откл
-		if (!sensorStat && ((statusWork & (1 << 1)) == 0))		{ time_sensors[0][0] = s_count; statusWork |= 1 << 1; }
+		else
+		{	// съезд с датчика
+			if ((statusWork & (1 << 1)) == 0)
+			{
+				time_sensors[0][0] = s_count;
+				statusWork |= 1 << 1;
+			}
+		}
 	}
 	void callBack_s1(bool stat)
 	{
 		bool sensorStat = *sensorMass[1];
-		if ( sensorStat && ((statusWork & (1 << 2)) == 0))	{ time_sensors[1][1] = s_count; statusWork |= 1 << 2; }
-		if (!sensorStat && ((statusWork & (1 << 3)) == 0))	{ time_sensors[1][0] = s_count; statusWork |= 1 << 3; }
+		if (sensorStat)
+		{	// наезд на датчик
+			if ((statusWork & (1 << 2)) == 0)	{ time_sensors[1][1] = s_count; statusWork |= 1 << 2; }
+		}
+		else
+		{	// съезд с датчика
+			if ((statusWork & (1 << 3)) == 0)	{ time_sensors[1][0] = s_count; statusWork |= 1 << 3; }
+		}
 	}
 	void callBack_s2(bool stat)
 	{
 		bool sensorStat = *sensorMass[2];
-		if ( sensorStat && ((statusWork & (1 << 4)) == 0))	{ time_sensors[2][1] = s_count; statusWork |= 1 << 4; }
-		if (!sensorStat && ((statusWork & (1 << 5)) == 0))	{ time_sensors[2][0] = s_count; statusWork |= 1 << 5; }
-		
+		if (sensorStat)
+		{	// наезд на датчик
+			if ((statusWork & (1 << 4)) == 0)	{ time_sensors[2][1] = s_count; statusWork |= 1 << 4; }
+		}
+		else
+		{	// съезд с датчика
+			if ((statusWork & (1 << 5)) == 0)	{ time_sensors[2][0] = s_count; statusWork |= 1 << 5; }
+		}
 	}
 	void callBack(uint8_t nSensor, bool stat)
 	{
