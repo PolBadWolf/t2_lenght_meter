@@ -205,6 +205,12 @@ namespace ns_sensors
 		// Zero TimeOut
 		if (!*sensorMass[0] && !*sensorMass[1] && !*sensorMass[2])
 		{
+			if (blockirovka)
+			{
+				statusWork = 0;
+				s_count = 0;
+				return;
+			}
 			if ((statusWork & (1 << 5)) != 0 )
 			{
 				statusWork = 0;
