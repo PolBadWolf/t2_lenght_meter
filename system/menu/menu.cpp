@@ -434,36 +434,28 @@ namespace ns_menu
 	// =======================================================================
 	// *************************** выбор параметра ***************************
 	// выбираемые параметры
-	// время интегрирования датчик 1
-	const char selectParametr0 [] PROGMEM = "D1 : t integr.  ";
-	#define MN_TimeIntegrD0													0
-	// время интегрирования датчик 2
-	const char selectParametr1 [] PROGMEM = "D2 : t integr.  ";
-	#define MN_TimeIntegrD1													1
-	// время интегрирования датчик 3
-	const char selectParametr2 [] PROGMEM = "D3 : t integr.  ";
-	#define MN_TimeIntegrD2													2
+	// время интегрирования датчик 1-3
+	const char selectParametr0 [] PROGMEM = "D : t integr.   ";
+	#define MN_TimeIntegrD													0
 	// дистанция от датчика 1 до датчика 2
-	const char selectParametr3 [] PROGMEM = "D1<->D2 distance";
-	#define MN_DistanceD0_D1 												3
+	const char selectParametr1 [] PROGMEM = "D1<->D2 distance";
+	#define MN_DistanceD0_D1 												1
 	// дистанция от датчика 1 до датчика 3
-	const char selectParametr4 [] PROGMEM = "D1<->D3 distance";
-	#define MN_DistanceD0_D2 												4
+	const char selectParametr2 [] PROGMEM = "D1<->D3 distance";
+	#define MN_DistanceD0_D2 												2
 	// ----------------------------------------------------------------------
 	// время прохождения короткой трубы между Д2 и Д3
-	const char selectParametr5 [] PROGMEM = "Zero timeout    ";
-	#define MN_ZeroTimeOut   												5
+	const char selectParametr3 [] PROGMEM = "Zero timeout    ";
+	#define MN_ZeroTimeOut   												3
 	// ----------------------------------------------------------------------
-	const char selectParametr6 [] PROGMEM = "Set Password";
-	#define MN_SetPassword													6
+	const char selectParametr4 [] PROGMEM = "Set Password";
+	#define MN_SetPassword													4
 	const char *selectParamTab[] = {
 		selectParametr0,
 		selectParametr1,
 		selectParametr2,
 		selectParametr3,
-		selectParametr4,
-		selectParametr5,
-		selectParametr6
+		selectParametr4
 	};
 	uint8_t selectParametr_Idx= 0;
 	const uint8_t selectParametr_Max = (sizeof(selectParamTab) / sizeof(char *));
@@ -503,20 +495,10 @@ namespace ns_menu
 	const char editStr_mm[]   PROGMEM = "мм";
 	char *editStr;
 	// -----------
-	void EndEditU8_IntD0(uint8_t dat)
+	void EndEditU8_IntD(uint8_t dat)
 	{
 		ns_sensors::s_sensorInt[0] = dat;
-		ns_sensors::ee_save();
-		SelectParam_Set();
-	}
-	void EndEditU8_IntD1(uint8_t dat)
-	{
 		ns_sensors::s_sensorInt[1] = dat;
-		ns_sensors::ee_save();
-		SelectParam_Set();
-	}
-	void EndEditU8_IntD2(uint8_t dat)
-	{
 		ns_sensors::s_sensorInt[2] = dat;
 		ns_sensors::ee_save();
 		SelectParam_Set();
@@ -546,7 +528,7 @@ namespace ns_menu
 	// -----------
 	void SelectParam_Enter() {
 		switch (selectParametr_Idx) {
-			case MN_TimeIntegrD0:
+			case MN_TimeIntegrD:
 				// время интегрирования датчик 1
 				mEdit_Uint8T.init(
 					ns_sensors::s_sensorInt[0],
@@ -554,30 +536,8 @@ namespace ns_menu
 					120,
 					(char *)selectParamTab[selectParametr_Idx],
 					(char *)editStr_mSec,
-					EndEditU8_IntD0
+					EndEditU8_IntD
 					);
-			break;
-			case MN_TimeIntegrD1:
-				// время интегрирования датчик 2
-				mEdit_Uint8T.init(
-					ns_sensors::s_sensorInt[1],
-					1,
-					120,
-					(char *)selectParamTab[selectParametr_Idx],
-					(char *)editStr_mSec,
-					EndEditU8_IntD1
-				);
- 			break;
-			case MN_TimeIntegrD2:
-				// время интегрирования датчик 3
-				mEdit_Uint8T.init(
-					ns_sensors::s_sensorInt[2],
-					1,
-					120,
-					(char *)selectParamTab[selectParametr_Idx],
-					(char *)editStr_mSec,
-					EndEditU8_IntD2
-				);
 			break;
 			case MN_DistanceD0_D1:
 				// дистанция от датчика 1 до датчика 2
@@ -716,7 +676,7 @@ namespace ns_menu
 	// ==============================
 	void Timeout_Set() {
  		mode = MODE_TIMEOUT;
-		 selectParametr_Idx = MN_TimeIntegrD0;
+		 selectParametr_Idx = MN_TimeIntegrD;
 	}
 #include "menu_tab_fn.h"
 }
