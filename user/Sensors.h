@@ -16,6 +16,12 @@
 #define		SENSORS_READY_BlockIzm		-2
 #define		SENSORS_READY_TimeOutCn		-3
 
+#define		SENSOR_STATUS_ZEROSENSOR	1
+#define		SENSOR_STATUS_BEGINIZM		2
+#define		SENSOR_STATUS_BLOCKIZM		4
+#define		SENSOR_STATUS_RENDER		8
+#define		SENSOR_STATUS_TIMEOUT		16
+
 namespace ns_sensors
 {
 	extern int32_t		time_sensors[][2];

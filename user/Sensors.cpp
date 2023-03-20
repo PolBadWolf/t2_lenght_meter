@@ -149,6 +149,7 @@ namespace ns_sensors
 		{
 			sensor[i]->setCountMax(s_sensorInt[i]);
 		}
+		blockIzmer->setCountMax(40);
 	}
 	// ==========
 	void Init()
@@ -238,7 +239,7 @@ namespace ns_sensors
 	void startOfDataCollection()
 	{
 		blockSensor = false;
-		if (!sensor[0]->stat && !sensor[0]->stat && !sensor[0]->stat)
+		if (!*sensorMass[0] && !*sensorMass[1] && !*sensorMass[2])
 		{
 			statusWork = 0;
 			s_count = s_count_timeOut;
