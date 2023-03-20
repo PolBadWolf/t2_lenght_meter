@@ -258,15 +258,6 @@ namespace ns_sensors
 		return *sensorMass[nSensor];
 	}
 	// ====================
-	int getReadyData()
-	{
-		if (countTimeOut)	return		SENSORS_READY_TimeOutCn;
-		if (!blockSensor)	return		SENSORS_READY_NotReady;
-		if (	(time_sensors[2][1] > time_sensors[1][1])
-			&&	(time_sensors[1][1] > time_sensors[0][1])
-			)	return SENSORS_READY_Ready;
-		return SENSORS_READY_ErrorSn;
-	}
 	int renderLenght()
 	{
 		if (!blockSensor)	return -1;

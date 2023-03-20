@@ -10,12 +10,6 @@
 #define __SENSORS_H__
 #include "path/path.h"
 
-#define		SENSORS_READY_NotReady		0
-#define		SENSORS_READY_Ready			1
-#define		SENSORS_READY_ErrorSn		-1
-#define		SENSORS_READY_BlockIzm		-2
-#define		SENSORS_READY_TimeOutCn		-3
-
 #define		SENSORS_STEP_NoZero			1
 #define		SENSORS_STEP_Zero			2
 #define		SENSORS_STEP_Start			3
@@ -48,7 +42,6 @@ namespace ns_sensors
 	void initIntegr();
 	void startOfDataCollection();
 	bool getStatSensor(uint8_t nSensor);
-	int	 getReadyData();
 	int	 renderLenght();
 	// *******
 	bool getDebugStat();
