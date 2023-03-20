@@ -37,6 +37,9 @@ namespace ns_sensors
 	int16_t		e_sensorPosition[3] EEMEM	= {0, 1000, 11045};			// позитции сенсоров
 	// =========================
 	Sensor		*blockIzmer;
+	// ********************************
+	volatile uint8_t		sensorsStep = SENSORS_STEP_NoZero;
+	uint16_t safeTimeZero = 0;
 
 	void ee_load()
 	{
@@ -74,12 +77,14 @@ namespace ns_sensors
 		bool sensorStat = *sensorMass[0];
 		if ( sensorStat)
 		{	// наезд на датчик
-			if ( ((statusWork & (1 << 0)) == 0) && !(*sensorMass[1]) && !(*sensorMass[2]))
+			if ( ((statusWork & (1 << 0)) == 0) && !(*sensorMass[1]) && !(*sensorMass[2]) && (sensorsStep == SENSORS_STEP_Zero))
 			{	// начало измерения
 				statusWork |= 1 << 0;
 				s_count = 0;
 				time_sensors[0][1] = s_count;
 				countTimeOut = false;
+				blockirovka = false;
+				sensorsStep = SENSORS_STEP_Start;
 			}
 		}
 		else
@@ -185,72 +190,67 @@ namespace ns_sensors
 		blockSensor = false;
 	}
 	// ===============
+	uint16_t	delayZero = 0;
 	void interrupt()
 	{
-		if (statusWork & (1 << 0) && !blockSensor)	s_count++;
-		else blockirovka = false;
+		if (!*sensorMass[0] && !*sensorMass[1] && !*sensorMass[2])
+		{
+			if ( ((sensorsStep == SENSORS_STEP_NoZero) /*|| (sensorsStep == SENSORS_STEP_BigTimeOut) || (sensorsStep == SENSORS_STEP_SmlTimeout)*/) && (++delayZero == 1000 ) )
+			{
+				sensorsStep = SENSORS_STEP_Zero;
+				statusWork = 0;
+				blockSensor = false;
+				blockirovka = false;
+				t_count = 0;
+				delayZero = 0;
+			}
+			if (sensorsStep == SENSORS_STEP_Start)
+			{
+				if (t_count < s_count_timeOut)	t_count++;
+				else	sensorsStep = SENSORS_STEP_SmlTimeout;
+				//***
+				if (blockirovka)	sensorsStep = SENSORS_STEP_BlockIzm;
+			}
+		}
+		if ( ((statusWork & (1 << 0)) && ( (sensorsStep == SENSORS_STEP_Start) || (sensorsStep == SENSORS_STEP_BlockIzm) ) ) )	s_count++;
 		if (s_count != 0 && s_count != s_count_timeOut) v_count = s_count;
+		// Big Time Out
+		if ( (s_count >= 20000) && (sensorsStep != SENSORS_STEP_NoZero) )
+		{
+			sensorsStep = SENSORS_STEP_BigTimeOut;
+			s_count = 0;
+			countTimeOut = true;	// *************
+		}
 		sensor[0]->interrupt();
 		sensor[1]->interrupt();
 		sensor[2]->interrupt();
 		//
 		blockIzmer->interrupt();
 		blockirovka |= blockIzmer->stat;
-		// Time Out
-		if (s_count >= 20000)
+		if ( (!*sensorMass[0] && !*sensorMass[1] && *sensorMass[2]) && (sensorsStep == SENSORS_STEP_Start) )
 		{
-				statusWork = 0;
-				s_count = s_count_timeOut;
-				countTimeOut = true;
+			sensorsStep = SENSORS_STEP_Ready;
 		}
-		// Zero TimeOut
-		if (!*sensorMass[0] && !*sensorMass[1] && !*sensorMass[2])
+		// ************
+		if ( (sensorsStep == SENSORS_STEP_Zero)  && !*sensorMass[0] && !*sensorMass[1] && !*sensorMass[2]  )
 		{
-			if (blockirovka)
+			if (safeTimeZero < 500)	safeTimeZero++;
+			if (safeTimeZero == 500)
 			{
+				safeTimeZero = 501;
 				statusWork = 0;
-				s_count = 0;
-				return;
-			}
-			if ((statusWork & (1 << 5)) != 0 )
-			{
-				statusWork = 0;
-				s_count = 0;
-			}
-			else
-			{
-				if (t_count < s_count_timeOut)
-				{
-					t_count++;
-				}
-				else
-				{
-					statusWork = 0;
-					s_count = 0;
-				}
+				blockSensor = false;
 			}
 		}
 		else
 		{
-			t_count = 0;
+			safeTimeZero = 0;
 		}
 	}
 	// ========================
 	void startOfDataCollection()
 	{
-		blockSensor = false;
-		if (!*sensorMass[0] && !*sensorMass[1] && !*sensorMass[2])
-		{
-			statusWork = 0;
-			s_count = s_count_timeOut;
-			for (uint8_t i = 0; i < 3; i++)
-			{
-				for (uint8_t j = 0; j < 2; j++)
-				{
-					time_sensors[i][j] = 0;
-				}
-			}
-		}
+		sensorsStep = SENSORS_STEP_NoZero;
 	}
 	// =====================
 	bool getStatSensor(uint8_t nSensor)
@@ -335,6 +335,8 @@ namespace ns_sensors
 	}
 	void mainCicle()
 	{
+// 		SCR->DigitZ(6, 1, sensorsStep);
+// 		SCR->Hex(8, statusWork);
 	}
 	unsigned char getStatusWork()
 	{

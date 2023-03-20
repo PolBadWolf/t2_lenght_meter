@@ -20,6 +20,7 @@ Core::Core(NewTubeCallBack newTubeCallBack)
 	ns_sensors::startOfDataCollection();
 	count99 = ns_device::steckTube->getLenghtTube(ns_device::steckTube->getCountSteckCurrent() - 1).n;
 	trigMessError = false;
+	flagBlockIzm = false;
 } //Core
 
 // default destructor
@@ -30,69 +31,56 @@ Core::Core(NewTubeCallBack newTubeCallBack)
 void Core::mainCycle()
 {
 	int lenghtTube = 0;
-	int s = ns_sensors::getReadyData();
-	switch (s)
+	uint8_t ss = ns_sensors::sensorsStep;
+	if (ss == SENSORS_STEP_Zero)
 	{
-		case SENSORS_READY_NotReady:
-			// нет готовности
-			trigMessError = false;
-			return;
-			break;
-		case SENSORS_READY_ErrorSn:
-			// ошибка работы сенсоров
-			{
-				if (!trigMessError)		sendRS.SendErrorSensor();
-				trigMessError = true;
-				stat = CORESTAT_ERRSN;
-				lenghtTube = -1;
-			}
-			break;
-		case SENSORS_READY_TimeOutCn:
-			{
-				if (!trigMessError)		sendRS.SendErrorSensor();
-				trigMessError = true;
-				stat = CORESTAT_ERRSN;
-				lenghtTube = -1;
-			}
-			break;
-		default:
-			// расчет и сохранение измеренной длины
-			if (lenghtTube == 0)
-			{
-				lenghtTube = ns_sensors::renderLenght();
-				if (lenghtTube < 6000 || lenghtTube > 12500)
-				{
-					sendRS.SendErrorRender(lenghtTube);
-					stat = CORESTAT_ERRIZ;
-				}
-				else
-				{
-					stat = CORESTAT_OK;
-					trigMessError = false;
-				}
-			}
-			break;
+		if (flagBlockIzm)
+		{
+			sendRS.SendChangeBlock(0);
+			stat = CORESTAT_BLOCK;
+			flagBlockIzm = false;
+		}
 	}
-	// следущй цикл
-	ns_sensors::startOfDataCollection();
-	currentLenghtTube = lenghtTube;
-	newData |= 1 << 0;
-	// измерение прошло
-	if (stat != CORESTAT_OK)		return;
-	if (ns_sensors::blockirovka)
+	if (ss == SENSORS_STEP_BlockIzm)
 	{
-		if (!trigMessError)		sendRS.SendChangeBlock(currentLenghtTube);
-		trigMessError = true;
-		stat = CORESTAT_BLOCK;
+		flagBlockIzm = true;
+		ns_sensors::startOfDataCollection();
 	}
-	else
+	if ( (ss == SENSORS_STEP_BigTimeOut) || (ss == SENSORS_STEP_SmlTimeout) )
 	{
-		if (++count99 > 99)		count99 = 1;
-		if (count99 < 1)		count99 = 1;
-		newTubeCallBack(currentLenghtTube, count99);
-		sendRS.SendLenght(count99, currentLenghtTube);
+		sendRS.SendErrorSensor();
+		stat = CORESTAT_ERRSN;
+		ns_sensors::startOfDataCollection();
 	}
-	newData = 0xff;
+	if (ss == SENSORS_STEP_Ready)
+	{
+		lenghtTube = ns_sensors::renderLenght();
+		if (lenghtTube < 6000 || lenghtTube > 13000)
+		{
+			sendRS.SendErrorRender(0);
+			stat = CORESTAT_ERRIZ;
+			ns_sensors::startOfDataCollection();
+		}
+		else
+		{
+			if (ns_sensors::blockirovka)
+			{
+				sendRS.SendChangeBlock(lenghtTube);
+				stat = CORESTAT_BLOCK;
+			}
+			else
+			{
+				stat = CORESTAT_OK;
+				currentLenghtTube = lenghtTube;
+				if (++count99 > 99)		count99 = 1;
+				if (count99 < 1)		count99 = 1;
+				newTubeCallBack(currentLenghtTube, count99);
+				sendRS.SendLenght(count99, currentLenghtTube);
+			}
+			ns_sensors::startOfDataCollection();
+		}
+	}
+ 	newData = 0xff;
 }
 
 signed char	Core::getStat()

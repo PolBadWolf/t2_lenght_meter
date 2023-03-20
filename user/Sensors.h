@@ -16,6 +16,14 @@
 #define		SENSORS_READY_BlockIzm		-2
 #define		SENSORS_READY_TimeOutCn		-3
 
+#define		SENSORS_STEP_NoZero			1
+#define		SENSORS_STEP_Zero			2
+#define		SENSORS_STEP_Start			3
+#define		SENSORS_STEP_BigTimeOut		4
+#define		SENSORS_STEP_SmlTimeout		5
+#define		SENSORS_STEP_BlockIzm		6
+#define		SENSORS_STEP_Ready			7
+
 namespace ns_sensors
 {
 	extern int32_t		time_sensors[][2];
@@ -27,6 +35,8 @@ namespace ns_sensors
 	extern bool			blockirovka;								// блокировка замера внешним сигналом
 	
 	extern int16_t		s_sensorPosition[3];						// позитции сенсоров
+	
+	extern	volatile uint8_t		sensorsStep;
 	
 	//
 	void ee_load();
