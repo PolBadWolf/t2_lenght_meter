@@ -78,9 +78,9 @@ void Core::mainCycle()
 				sendRS.SendLenght(count99, currentLenghtTube);
 			}
 			ns_sensors::startOfDataCollection();
+ 			newData = 0xff;
 		}
 	}
- 	newData = 0xff;
 }
 
 signed char	Core::getStat()
