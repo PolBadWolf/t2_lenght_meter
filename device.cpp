@@ -53,7 +53,7 @@ namespace ns_device
 
 
 #ifdef CONF_RS232
- 		rs232 = RS_232::init(baud19200, DISABLE, bit8, 8, 32);
+ 		rs232 = RS_232::init(baud19200, DISABLE, bit8, 8, 64);
 		rs232->string_P(PSTR(" Start programm\r\n"));
 #endif // CONF_RS232
 
