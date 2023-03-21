@@ -15,8 +15,8 @@ class Sensor
 {
 //variables
 public:
-	bool						stat;
 	bool						statInv;
+	bool						triger;
 protected:
 	volatile unsigned char*		pin;
 	unsigned char				mask;
@@ -24,7 +24,6 @@ protected:
 	SensorCallBack				callBack;
 	unsigned char				count;
 	unsigned char				countMax;
-	bool						triger;
 private:
 
 //functions
@@ -34,6 +33,7 @@ public:
 	void interrupt();
 	void setCountMax(unsigned char max) { countMax = max; }
 	unsigned char getCountMax()			{ return countMax; }
+	bool	getStat();
 protected:
 private:
 	Sensor( const Sensor &c );

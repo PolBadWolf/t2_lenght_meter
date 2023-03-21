@@ -282,10 +282,16 @@ namespace ns_menu
 		scr->Clear();
 		scr->String_P((uint8_t)0, PSTR("Просм."));
 		scr->String_P(16, PSTR("данных"));
-		scr->Digit( 7, 2, unit1.n);
-		scr->Digit(10, 5, unit1.lenght);
-		scr->Digit(23, 2, unit2.n);
-		scr->Digit(26, 5, unit2.lenght);
+		if (unit1.n != 0)
+		{
+			scr->Digit( 7, 2, unit1.n);
+			scr->Digit(10, 5, unit1.lenght);
+		}
+		if (unit2.n != 0)
+		{
+			scr->Digit(23, 2, unit2.n);
+			scr->Digit(26, 5, unit2.lenght);
+		}
 	}
 	
 	void steckTube_SetMode()
@@ -578,7 +584,7 @@ namespace ns_menu
 			break;
 			case MN_ZeroSensorInv:
 				ns_sensors::setZeroSensorInv();
-				selectParametr_Idx = 0;
+				Main_SetMode();
 				break;
 			case MN_SetPassword:
  				FnMenu(MODE_SET_PASS, MENU_SETMODE);

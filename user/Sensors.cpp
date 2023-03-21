@@ -31,14 +31,14 @@ namespace ns_sensors
 	uint8_t		e_sensorInt[3] EEMEM	= {20, 20, 20};
 	//
 	int16_t		s_sensorPosition[3];									// позитции сенсоров
-	int16_t		e_sensorPosition[3] EEMEM	= {0, 1000, 11045};			// позитции сенсоров
+	int16_t		e_sensorPosition[3] EEMEM	= {0, 1063, 11045};			// позитции сенсоров
 	// =========================
 	Sensor		*blockIzmer;
 	// ********************************
 	volatile uint8_t		sensorsStep = SENSORS_STEP_NoZero;
 	uint16_t safeTimeZero = 0;
  	bool		sensorInv[4];
- 	bool		e_sensorInv[4] EEMEM = {true, true, true, true};
+ 	bool		e_sensorInv[4] EEMEM = {false, true, false, true};
 
 	void ee_load()
 	{
@@ -83,10 +83,10 @@ namespace ns_sensors
 	// ==========
 	void callBack_s0(bool stat)
 	{
-		bool sensorStat = sensor[0]->stat;
+		bool sensorStat = sensor[0]->getStat();
 		if ( sensorStat)
 		{	// наезд на датчик
-			if ( ((statusWork & (1 << 0)) == 0) && !sensor[1]->stat && !sensor[2]->stat && (sensorsStep == SENSORS_STEP_Zero))
+			if ( ((statusWork & (1 << 0)) == 0) && !sensor[1]->getStat() && !sensor[2]->getStat() && (sensorsStep == SENSORS_STEP_Zero))
 			{	// начало измерения
 				statusWork |= 1 << 0;
 				s_count = 0;
@@ -107,7 +107,7 @@ namespace ns_sensors
 	}
 	void callBack_s1(bool stat)
 	{
-		bool sensorStat = sensor[1]->stat;
+		bool sensorStat = sensor[1]->getStat();
 		if (sensorStat)
 		{	// наезд на датчик
 			if ((statusWork & (1 << 2)) == 0)	{ time_sensors[1][1] = s_count; statusWork |= 1 << 2; }
@@ -119,7 +119,7 @@ namespace ns_sensors
 	}
 	void callBack_s2(bool stat)
 	{
-		bool sensorStat = sensor[2]->stat;
+		bool sensorStat = sensor[2]->getStat();
 		if (sensorStat)
 		{	// наезд на датчик
 			if ((statusWork & (1 << 4)) == 0)	{ time_sensors[2][1] = s_count; statusWork |= 1 << 4; }
@@ -148,7 +148,7 @@ namespace ns_sensors
 				break;
 		}
 		// проверка на окончание сбора данных
-		if (!sensor[0]->stat && !sensor[1]->stat && sensor[2]->stat)
+		if (!sensor[0]->getStat() && !sensor[1]->getStat() && sensor[2]->getStat())
 		{
 			blockSensor = true;
 		}
@@ -184,7 +184,7 @@ namespace ns_sensors
 	uint16_t	delayZero = 0;
 	void interrupt()
 	{
-		if (!sensor[0]->stat && !sensor[1]->stat && !sensor[2]->stat)
+		if (!sensor[0]->getStat() && !sensor[1]->getStat() && !sensor[2]->getStat())
 		{
 			if ( ((sensorsStep == SENSORS_STEP_NoZero) /*|| (sensorsStep == SENSORS_STEP_BigTimeOut) || (sensorsStep == SENSORS_STEP_SmlTimeout)*/) && (++delayZero == 1000 ) )
 			{
@@ -217,13 +217,13 @@ namespace ns_sensors
 		sensor[2]->interrupt();
 		//
 		blockIzmer->interrupt();
-		blockirovka |= blockIzmer->stat;
-		if ( (!sensor[0]->stat && !sensor[1]->stat && sensor[2]->stat) && (sensorsStep == SENSORS_STEP_Start) )
+		blockirovka |= blockIzmer->getStat();
+		if ( (!sensor[0]->getStat() && !sensor[1]->getStat() && sensor[2]->getStat()) && (sensorsStep == SENSORS_STEP_Start) )
 		{
 			sensorsStep = SENSORS_STEP_Ready;
 		}
 		// ************
-		if ( (sensorsStep == SENSORS_STEP_Zero)  && !sensor[0]->stat && !sensor[1]->stat && !sensor[2]->stat  )
+		if ( (sensorsStep == SENSORS_STEP_Zero)  && !sensor[0]->getStat() && !sensor[1]->getStat() && !sensor[2]->getStat()  )
 		{
 			if (safeTimeZero < 500)	safeTimeZero++;
 			if (safeTimeZero == 500)
@@ -303,18 +303,18 @@ namespace ns_sensors
 	//==============
 	bool getSensorStat(uint8_t n)
 	{
-		return sensor[n]->stat;
+		return sensor[n]->getStat();
 	}
 	void setZeroSensorInv()
 	{
 		bool stat;
 		for (uint8_t i = 0; i < 3; i++)
 		{
-			stat = sensor[i]->stat;
+			stat = sensor[i]->triger;
 			sensorInv[i] = stat;
 			sensor[i]->statInv = stat;
 		}
-		stat = blockIzmer->stat;
+		stat = blockIzmer->triger;
 		sensorInv[3] = stat;
 		blockIzmer->statInv = stat;
 		ee_save();

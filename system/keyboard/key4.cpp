@@ -24,8 +24,8 @@ typedef struct
 #define KEY_WR		(*((volatile BYTE_KEY_DATA*)(&PORTG))).data
 typedef struct
 {
-	unsigned free:4;
 	unsigned data:4;
+	unsigned free:4;
 } BYTE_KEY_DATA;
 #endif
 

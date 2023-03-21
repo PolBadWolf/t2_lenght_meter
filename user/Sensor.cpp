@@ -21,12 +21,10 @@ Sensor::Sensor(unsigned char n_sensor, volatile unsigned char* ddr, volatile uns
 	if (*pin & mask)
 	{
 		triger = true;
-		stat = true ^ statInv;
 	}
 	else
 	{
 		triger = false;
-		stat = false ^ statInv;
 	}
 } //Sensor
 
@@ -44,8 +42,7 @@ void Sensor::interrupt()
 		{
 			count	= countMax;
 			triger	= true;
-			stat	= true ^ statInv;
-			if (callBack != nullptr) callBack(n_sensor, stat);
+			if (callBack != nullptr) callBack(n_sensor, triger ^ statInv);
 		}
 	}
 	else
@@ -55,8 +52,12 @@ void Sensor::interrupt()
 		{
 			count	= 0;
 			triger	= false;
-			stat	= false ^ statInv;
-			if (callBack != nullptr) callBack(n_sensor, stat);
+			if (callBack != nullptr) callBack(n_sensor, triger ^ statInv);
 		}
 	}
+}
+
+bool Sensor::getStat()
+{
+	return	triger ^ statInv;
 }
