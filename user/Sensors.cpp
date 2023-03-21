@@ -37,8 +37,8 @@ namespace ns_sensors
 	// ********************************
 	volatile uint8_t		sensorsStep = SENSORS_STEP_NoZero;
 	uint16_t safeTimeZero = 0;
- 	bool		sensorInv[3];
- 	bool		e_sensorInv[3] EEMEM = {true, true, true};
+ 	bool		sensorInv[4];
+ 	bool		e_sensorInv[4] EEMEM = {true, true, true, true};
 
 	void ee_load()
 	{
@@ -55,7 +55,7 @@ namespace ns_sensors
 			eeprom_read_block(&s_sensorPosition[i], &e_sensorPosition[i], sizeof(s_sensorPosition[0]));
 		}
 		// инверсия сенсоров
-		for (uint8_t i = 0; i < 3; i++)
+		for (uint8_t i = 0; i < 4; i++)
 		{
 			sensorInv[i] = (bool) eeprom_read_byte((uint8_t *) &e_sensorInv[i]);
 		}
@@ -75,7 +75,7 @@ namespace ns_sensors
 			eeprom_update_block(&s_sensorPosition[i], &e_sensorPosition[i], sizeof(s_sensorPosition[0]));
 		}
 		// инверсия сенсоров
-		for (uint8_t i = 0; i < 3; i++)
+		for (uint8_t i = 0; i < 4; i++)
 		{
 			eeprom_update_byte((uint8_t *)&e_sensorInv[i], sensorInv[i]);
 		}
@@ -170,7 +170,7 @@ namespace ns_sensors
 		sensor[0] = new Sensor(0, &DDRC, &PORTC, &PINC, 0, callBack, sensorInv[0]);
 		sensor[1] = new Sensor(1, &DDRC, &PORTC, &PINC, 1, callBack, sensorInv[1]);
 		sensor[2] = new Sensor(2, &DDRC, &PORTC, &PINC, 3, callBack, sensorInv[2]);
-		blockIzmer = new Sensor(0, &DDRC, &PORTC, &PINC, 4, callBackBlock, true);
+		blockIzmer = new Sensor(0, &DDRC, &PORTC, &PINC, 4, callBackBlock, sensorInv[3]);
 		initIntegr();
 		s_count = 0;
 		statusWork = 0;
@@ -314,6 +314,9 @@ namespace ns_sensors
 			sensorInv[i] = stat;
 			sensor[i]->statInv = stat;
 		}
+		stat = blockIzmer->stat;
+		sensorInv[3] = stat;
+		blockIzmer->statInv = stat;
 		ee_save();
 	}
 }
