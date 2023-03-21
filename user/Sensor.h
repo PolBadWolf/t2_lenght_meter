@@ -16,6 +16,7 @@ class Sensor
 //variables
 public:
 	bool						stat;
+	bool						statInv;
 protected:
 	volatile unsigned char*		pin;
 	unsigned char				mask;
@@ -28,7 +29,7 @@ private:
 
 //functions
 public:
-	Sensor(unsigned char n_sensor, volatile unsigned char* s_ddr, volatile unsigned char* s_port, volatile unsigned char* s_pin, unsigned char nBit, SensorCallBack callBack);
+	Sensor(unsigned char n_sensor, volatile unsigned char* s_ddr, volatile unsigned char* s_port, volatile unsigned char* s_pin, unsigned char nBit, SensorCallBack callBack, bool inv);
 	~Sensor();
 	void interrupt();
 	void setCountMax(unsigned char max) { countMax = max; }

@@ -23,7 +23,7 @@ namespace ns_sensors
 	extern int32_t		time_sensors[][2];
 	extern uint8_t		s_sensorInt[3];
 	extern uint8_t		statusWork;
-	extern bool			*sensorMass[3];
+// 	extern bool			*sensorMass[3];
 	extern int32_t		s_count_timeOut;
 	extern int32_t		v_count;									// счетчик тиков
 	extern bool			blockirovka;								// блокировка замера внешним сигналом
@@ -43,6 +43,9 @@ namespace ns_sensors
 	void startOfDataCollection();
 	bool getStatSensor(uint8_t nSensor);
 	int	 renderLenght();
+	// ===============
+	bool getSensorStat(uint8_t n);
+	void setZeroSensorInv();
 	// *******
 	bool getDebugStat();
 	void setDebugStat(bool stat);
