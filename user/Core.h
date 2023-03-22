@@ -33,6 +33,8 @@ protected:
 private:
 	SendRS			sendRS;
 	bool			trigMessError;
+	//
+	bool			flagBlockIzm;
 
 //functions
 public:

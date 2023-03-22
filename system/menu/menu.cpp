@@ -194,9 +194,9 @@ namespace ns_menu
 			}
 		}
 		// ************** датчики **************************
-		scr->PutChar(16, ((*ns_sensors::sensorMass[0]) ? 1 : 0) );
-		scr->PutChar(17, ((*ns_sensors::sensorMass[1]) ? 1 : 0) );
-		scr->PutChar(18, ((*ns_sensors::sensorMass[2]) ? 1 : 0) );
+		scr->PutChar(16, (ns_sensors::getSensorStat(0) ? 1 : 0) );
+		scr->PutChar(17, (ns_sensors::getSensorStat(1) ? 1 : 0) );
+		scr->PutChar(18, (ns_sensors::getSensorStat(2) ? 1 : 0) );
 		scr->PutChar(19, (( ns_sensors::blockirovka)   ? 1 : 0) );
 		// ************** счетчик *********************
 		scr->DigitZ((uint8_t)0, 5, ns_sensors::v_count);
@@ -282,10 +282,16 @@ namespace ns_menu
 		scr->Clear();
 		scr->String_P((uint8_t)0, PSTR("Просм."));
 		scr->String_P(16, PSTR("данных"));
-		scr->Digit( 7, 2, unit1.n);
-		scr->Digit(10, 5, unit1.lenght);
-		scr->Digit(23, 2, unit2.n);
-		scr->Digit(26, 5, unit2.lenght);
+		if (unit1.n != 0)
+		{
+			scr->Digit( 7, 2, unit1.n);
+			scr->Digit(10, 5, unit1.lenght);
+		}
+		if (unit2.n != 0)
+		{
+			scr->Digit(23, 2, unit2.n);
+			scr->Digit(26, 5, unit2.lenght);
+		}
 	}
 	
 	void steckTube_SetMode()
@@ -448,14 +454,19 @@ namespace ns_menu
 	const char selectParametr3 [] PROGMEM = "Zero timeout    ";
 	#define MN_ZeroTimeOut   												3
 	// ----------------------------------------------------------------------
-	const char selectParametr4 [] PROGMEM = "Set Password";
-	#define MN_SetPassword													4
+	// время прохождения короткой трубы между Д2 и Д3
+	const char selectParametr4 [] PROGMEM = "Zero sensor inp ";
+	#define MN_ZeroSensorInv   												4
+	// ----------------------------------------------------------------------
+	const char selectParametr5 [] PROGMEM = "Set Password";
+	#define MN_SetPassword													5
 	const char *selectParamTab[] = {
 		selectParametr0,
 		selectParametr1,
 		selectParametr2,
 		selectParametr3,
-		selectParametr4
+		selectParametr4,
+		selectParametr5
 	};
 	uint8_t selectParametr_Idx= 0;
 	const uint8_t selectParametr_Max = (sizeof(selectParamTab) / sizeof(char *));
@@ -571,6 +582,10 @@ namespace ns_menu
 				EndEditU16_ZeroTimeOut
 				);
 			break;
+			case MN_ZeroSensorInv:
+				ns_sensors::setZeroSensorInv();
+				Main_SetMode();
+				break;
 			case MN_SetPassword:
  				FnMenu(MODE_SET_PASS, MENU_SETMODE);
 			break;

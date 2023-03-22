@@ -9,23 +9,22 @@
 #include "Sensor.h"
 
 // default constructor
-Sensor::Sensor(unsigned char n_sensor, volatile unsigned char* ddr, volatile unsigned char* port, volatile unsigned char* s_pin, unsigned char nBit, SensorCallBack callBack)
+Sensor::Sensor(unsigned char n_sensor, volatile unsigned char* ddr, volatile unsigned char* port, volatile unsigned char* s_pin, unsigned char nBit, SensorCallBack callBack, bool inv)
 {
 	this->pin = s_pin; mask = 1 << (nBit & 7);
 	*ddr &= ~mask;	*port |= mask;
 	this->n_sensor = n_sensor;
 	this->callBack = *callBack;
+	statInv = inv;
 	count = 0;
 	countMax = 20;
 	if (*pin & mask)
 	{
 		triger = true;
-		stat = false;
 	}
 	else
 	{
 		triger = false;
-		stat = true;
 	}
 } //Sensor
 
@@ -43,8 +42,7 @@ void Sensor::interrupt()
 		{
 			count	= countMax;
 			triger	= true;
-			stat	= false;
-			if (callBack != nullptr) callBack(n_sensor, stat);
+			if (callBack != nullptr) callBack(n_sensor, triger ^ statInv);
 		}
 	}
 	else
@@ -54,8 +52,12 @@ void Sensor::interrupt()
 		{
 			count	= 0;
 			triger	= false;
-			stat	= true;
-			if (callBack != nullptr) callBack(n_sensor, stat);
+			if (callBack != nullptr) callBack(n_sensor, triger ^ statInv);
 		}
 	}
+}
+
+bool Sensor::getStat()
+{
+	return	triger ^ statInv;
 }
