@@ -19,7 +19,6 @@ namespace ns_sensors
 	int32_t		v_count;										// счетчик тиков
 	int32_t		t_count;										// счетчик тиков для таймаута
 	Sensor		*sensor[3];										// объекты сенсоры
-	uint8_t		statusWork = 0;									// блокировка от повторных срабатываний событий на сенсорах
 	bool		blockSensor;									// сигнал блокировки к сбору данных/готовность к расчету длины
 	bool		blockirovka;									// блокировка замера внешним сигналом
 	bool		countTimeOut;									//
@@ -37,8 +36,12 @@ namespace ns_sensors
 	// ********************************
 	volatile uint8_t		sensorsStep = SENSORS_STEP_NoZero;
 	uint16_t safeTimeZero = 0;
+#define safeTimeZeroSize	500
  	bool		sensorInv[4];
  	bool		e_sensorInv[4] EEMEM = {false, true, false, true};
+	// ************* safe interval
+	uint16_t	safeInterval[3] = {0, 0, 0};
+#define safeIntervalSize	500
 
 	void ee_load()
 	{
@@ -83,12 +86,12 @@ namespace ns_sensors
 	// ==========
 	void callBack_s0(bool stat)
 	{
-		bool sensorStat = sensor[0]->getStat();
-		if ( sensorStat)
+		if (safeInterval[0] != 0)	return;
+		safeInterval[0] = safeIntervalSize;
+		if (stat)
 		{	// наезд на датчик
-			if ( ((statusWork & (1 << 0)) == 0) && !sensor[1]->getStat() && !sensor[2]->getStat() && (sensorsStep == SENSORS_STEP_Zero))
+			if ( !sensor[1]->getStat() && !sensor[2]->getStat() && (sensorsStep == SENSORS_STEP_Zero))
 			{	// начало измерения
-				statusWork |= 1 << 0;
 				s_count = 0;
 				time_sensors[0][1] = s_count;
 				countTimeOut = false;
@@ -98,35 +101,33 @@ namespace ns_sensors
 		}
 		else
 		{	// съезд с датчика
-			if ((statusWork & (1 << 1)) == 0)
-			{
-				time_sensors[0][0] = s_count;
-				statusWork |= 1 << 1;
-			}
+			time_sensors[0][0] = s_count;
 		}
 	}
 	void callBack_s1(bool stat)
 	{
-		bool sensorStat = sensor[1]->getStat();
-		if (sensorStat)
+		if (safeInterval[1] != 0)	return;
+		safeInterval[1] = safeIntervalSize;
+		if (stat)
 		{	// наезд на датчик
-			if ((statusWork & (1 << 2)) == 0)	{ time_sensors[1][1] = s_count; statusWork |= 1 << 2; }
+			time_sensors[1][1] = s_count;
 		}
 		else
 		{	// съезд с датчика
-			if ((statusWork & (1 << 3)) == 0)	{ time_sensors[1][0] = s_count; statusWork |= 1 << 3; }
+			time_sensors[1][0] = s_count;
 		}
 	}
 	void callBack_s2(bool stat)
 	{
-		bool sensorStat = sensor[2]->getStat();
-		if (sensorStat)
+		if (safeInterval[2] != 0)	return;
+		safeInterval[2] = safeIntervalSize;
+		if (stat)
 		{	// наезд на датчик
-			if ((statusWork & (1 << 4)) == 0)	{ time_sensors[2][1] = s_count; statusWork |= 1 << 4; }
+			time_sensors[2][1] = s_count;
 		}
 		else
 		{	// съезд с датчика
-			if ((statusWork & (1 << 5)) == 0)	{ time_sensors[2][0] = s_count; statusWork |= 1 << 5; }
+			time_sensors[2][0] = s_count;
 		}
 	}
 	void callBack(uint8_t nSensor, bool stat)
@@ -173,7 +174,6 @@ namespace ns_sensors
 		blockIzmer = new Sensor(0, &DDRC, &PORTC, &PINC, 4, callBackBlock, sensorInv[3]);
 		initIntegr();
 		s_count = 0;
-		statusWork = 0;
 		t_count = 0;
 		blockirovka = false;
 		countTimeOut = false;
@@ -189,7 +189,6 @@ namespace ns_sensors
 			if ( ((sensorsStep == SENSORS_STEP_NoZero) /*|| (sensorsStep == SENSORS_STEP_BigTimeOut) || (sensorsStep == SENSORS_STEP_SmlTimeout)*/) && (++delayZero == 1000 ) )
 			{
 				sensorsStep = SENSORS_STEP_Zero;
-				statusWork = 0;
 				blockSensor = false;
 				blockirovka = false;
 				t_count = 0;
@@ -203,7 +202,7 @@ namespace ns_sensors
 				if (blockirovka)	sensorsStep = SENSORS_STEP_BlockIzm;
 			}
 		}
-		if ( ((statusWork & (1 << 0)) && ( (sensorsStep == SENSORS_STEP_Start) || (sensorsStep == SENSORS_STEP_BlockIzm) ) ) )	s_count++;
+		if ( sensorsStep == SENSORS_STEP_Start || sensorsStep == SENSORS_STEP_BlockIzm )	s_count++;
 		if (s_count != 0 && s_count != s_count_timeOut) v_count = s_count;
 		// Big Time Out
 		if ( (s_count >= 20000) && (sensorsStep != SENSORS_STEP_NoZero) )
@@ -212,6 +211,12 @@ namespace ns_sensors
 			s_count = 0;
 			countTimeOut = true;	// *************
 		}
+		// ===========
+		for (uint8_t i = 0; i < 3; i++)
+		{
+			if (safeInterval[i] > 0)	safeInterval[i]--;
+		}
+		// ===========
 		sensor[0]->interrupt();
 		sensor[1]->interrupt();
 		sensor[2]->interrupt();
@@ -225,11 +230,10 @@ namespace ns_sensors
 		// ************
 		if ( (sensorsStep == SENSORS_STEP_Zero)  && !sensor[0]->getStat() && !sensor[1]->getStat() && !sensor[2]->getStat()  )
 		{
-			if (safeTimeZero < 500)	safeTimeZero++;
-			if (safeTimeZero == 500)
+			if (safeTimeZero < safeTimeZeroSize)	safeTimeZero++;
+			if (safeTimeZero == safeTimeZeroSize)
 			{
-				safeTimeZero = 501;
-				statusWork = 0;
+				safeTimeZero = safeTimeZeroSize + 1;
 				blockSensor = false;
 			}
 		}
@@ -296,10 +300,10 @@ namespace ns_sensors
 // 		SCR->DigitZ(6, 1, sensorsStep);
 // 		SCR->Hex(8, statusWork);
 	}
-	unsigned char getStatusWork()
-	{
-		return statusWork;
-	}
+// 	unsigned char getStatusWork()
+// 	{
+// 		return statusWork;
+// 	}
 	//==============
 	bool getSensorStat(uint8_t n)
 	{
