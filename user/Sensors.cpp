@@ -42,6 +42,8 @@ namespace ns_sensors
 	// ************* safe interval
 	uint16_t	safeInterval[3] = {0, 0, 0};
 #define safeIntervalSize	500
+	// ======================
+	uint8_t nAlgoritm;
 
 	void ee_load()
 	{
@@ -101,6 +103,7 @@ namespace ns_sensors
 				countTimeOut = false;
 				blockirovka = false;
 				sensorsStep = SENSORS_STEP_Start;
+				nAlgoritm = N_Algoritm_NONE;
 			}
 		}
 		else
@@ -280,21 +283,25 @@ namespace ns_sensors
 		// до счет в минус на малой базе
 		if ( (time_sensors[2][1] >= time_sensors[1][0]) && (time_sensors[1][0] >= time_sensors[0][0]))
 		{
+			nAlgoritm = N_Algoritm_SML_MNS;
 			return baseMainSmall - (baseRender * timeRenderMinusBaseSmall / timeRender);
 		}
 		// до счет в плюс на большой базе
 		if ( time_sensors[0][0] >= time_sensors[2][1] )
 		{
+			nAlgoritm = N_Algoritm_BIG_PLS;
 			return baseMainBig + (baseRender * timeRenderPlusBaseBig / timeRender);
 		}
 		// до счет в плюс на малой базе
 		if ( timeRenderMinusBaseBig >= timeRenderPlusBaseSmall )
 		{
+			nAlgoritm = N_Algoritm_SML_PLS;
 			return baseMainSmall + (baseRender * timeRenderPlusBaseSmall / timeRender);
 		}
 		// до счет в минус на большой базе
 		if ( timeRenderPlusBaseSmall >= timeRenderMinusBaseBig )
 		{
+			nAlgoritm = N_Algoritm_BIG_MNS;
 			return baseMainBig - (baseRender * timeRenderMinusBaseBig / timeRender);
 		}
 		return -1;

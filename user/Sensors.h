@@ -32,6 +32,13 @@ namespace ns_sensors
 	
 	extern	volatile uint8_t		sensorsStep;
 	
+	extern	uint8_t nAlgoritm;
+#define N_Algoritm_NONE			0
+#define N_Algoritm_BIG_PLS		1
+#define N_Algoritm_BIG_MNS		2
+#define N_Algoritm_SML_PLS		3
+#define N_Algoritm_SML_MNS		4
+	
 	//
 	void ee_load();
 	void ee_save();
