@@ -77,6 +77,12 @@ void Core::mainCycle()
 				if (count99 < 1)		count99 = 1;
 				newTubeCallBack(currentLenghtTube, count99);
 				sendRS.SendLenght(count99, currentLenghtTube);
+				// save last timing
+				lastTiming[0] = ns_sensors::time_sensors[0][0];
+				lastTiming[1] = ns_sensors::time_sensors[1][0];
+				lastTiming[2] = ns_sensors::time_sensors[2][1];
+				nAlgoritm = ns_sensors::nAlgoritm;
+				// ======
 				ns_sensors::startOfDataCollection();
 				newData = 0xff;
 			}
