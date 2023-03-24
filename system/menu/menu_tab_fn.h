@@ -27,7 +27,7 @@ const TyFnMn MassFnMn[][8] PROGMEM =
 	{				Dupm,	 SelectParam_Set,MenuEdit_Uint16T::minus, MenuEdit_Uint16T::plus,  MenuEdit_Uint16T::enter,				Dupm,				Dupm,	 SelectParam_Set }, //  8 редактирование параметров мерность : uint16_t
 	{				Dupm,		 SetPass_Bck,			 SetPass_Mns,			 SetPass_Pls,			   SetPass_Ent,				Dupm,		 SetPass_Set,				Dupm }, //  9 установка пароля
 	{				Dupm,				Dupm,					Dupm,					Dupm,					  Dupm,				Dupm,		 Timeout_Set,	 SelectParam_Set }, // 10 timeOut
-	{				Dupm,				Dupm,					Dupm,					Dupm,					  Dupm,				Dupm,				Dupm,				Dupm },
+	{showLastTiming_view,		Main_SetMode,					Dupm,					Dupm,					  Dupm,				Dupm, showLastTiming_set,				Dupm }, // 11 show last timing
 
 	{				Dupm,				Dupm,					Dupm,					Dupm,					  Dupm,				Dupm,				Dupm,				Dupm },
 	{				Dupm,				Dupm,					Dupm,					Dupm,					  Dupm,				Dupm,				Dupm,				Dupm },

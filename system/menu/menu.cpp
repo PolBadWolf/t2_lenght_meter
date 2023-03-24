@@ -460,13 +460,18 @@ namespace ns_menu
 	// ----------------------------------------------------------------------
 	const char selectParametr5 [] PROGMEM = "Set Password";
 	#define MN_SetPassword													5
+	// ----------------------------------------------------------------------
+	const char selectParametr6 [] PROGMEM = "Show timing     ";
+	#define MN_ShowTiming													6
+	// ----------------------------------------------------------------------
 	const char *selectParamTab[] = {
 		selectParametr0,
 		selectParametr1,
 		selectParametr2,
 		selectParametr3,
 		selectParametr4,
-		selectParametr5
+		selectParametr5,
+		selectParametr6
 	};
 	uint8_t selectParametr_Idx= 0;
 	const uint8_t selectParametr_Max = (sizeof(selectParamTab) / sizeof(char *));
@@ -589,6 +594,9 @@ namespace ns_menu
 			case MN_SetPassword:
  				FnMenu(MODE_SET_PASS, MENU_SETMODE);
 			break;
+			case MN_ShowTiming:
+				FnMenu(MODE_SHOW_TIMING, MENU_SETMODE);
+			break;
 			default:
 			break;
 		}
@@ -682,7 +690,6 @@ namespace ns_menu
 				eeprom_update_byte((uint8_t *)&eePass[i], inPass[i]);
 			scr->Clear();
 			scr->String_P(scr->SetPosition(0, 0), PSTR("Новый пароль"));
-			scr->pos = scr->SetPosition(0, 1);
 			scr->String_P(scr->SetPosition(0, 1), PSTR("установлен"));
 			CRITICAL_SECTION { timeOut = 5000; }
  			FnMenu(MODE_TIMEOUT, MENU_SETMODE);
@@ -692,6 +699,29 @@ namespace ns_menu
 	void Timeout_Set() {
  		mode = MODE_TIMEOUT;
 		 selectParametr_Idx = MN_TimeIntegrD;
+	}
+	// ======================================================
+	bool showLastTimingFist = false;
+	void showLastTiming_view()
+	{
+		if (showLastTimingFist || (ns_device::core->newData & (1 << 2)) )
+		{
+			ns_device::core->newData &= ~(1 << 2);
+			showLastTimingFist = false;
+			scr->DigitZ(scr->SetPosition(0, 0), 5, ns_device::core->lastTiming[0]);
+			scr->DigitZ(scr->SetPosition(6, 0), 5, ns_device::core->lastTiming[1]);
+			scr->DigitZ(scr->SetPosition(0, 1), 5, ns_device::core->lastTiming[2]);
+			scr->DigitZ(scr->SetPosition(6, 1), 1, ns_device::core->lastAlgoritm);
+			scr->DigitZ(scr->SetPosition(8, 1), 5, ns_device::core->getCurrentLenghtTube());
+		}
+	}
+	void showLastTiming_set()
+	{
+ 		mode = MODE_SHOW_TIMING;
+		selectParametr_Idx = MN_TimeIntegrD;
+		showLastTimingFist = true;
+		scr->Clear();
+		showLastTiming_view();
 	}
 #include "menu_tab_fn.h"
 }

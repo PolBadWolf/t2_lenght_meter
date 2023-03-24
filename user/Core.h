@@ -27,7 +27,7 @@ public:
 	unsigned char	newData;
 	// current timing
 	int32_t			lastTiming[3];
-	uint8_t			nAlgoritm;
+	uint8_t			lastAlgoritm;
 protected:
 	signed char		stat;
 	NewTubeCallBack	newTubeCallBack;

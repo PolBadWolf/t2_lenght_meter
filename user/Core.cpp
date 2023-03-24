@@ -81,7 +81,7 @@ void Core::mainCycle()
 				lastTiming[0] = ns_sensors::time_sensors[0][0];
 				lastTiming[1] = ns_sensors::time_sensors[1][0];
 				lastTiming[2] = ns_sensors::time_sensors[2][1];
-				nAlgoritm = ns_sensors::nAlgoritm;
+				lastAlgoritm = ns_sensors::nAlgoritm;
 				// ======
 				ns_sensors::startOfDataCollection();
 				newData = 0xff;
