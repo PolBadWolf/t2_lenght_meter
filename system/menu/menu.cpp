@@ -308,14 +308,14 @@ namespace ns_menu
 	void steckTube_minus()
 	{
 		if (var_steckTube_cur > 0)	var_steckTube_cur--;
-		else		var_steckTube_cur = steck->getCountSteckFull() - 2;
+// 		else		var_steckTube_cur = steck->getCountSteckFull() - 2;
 		steckTube_vDat();
 	}
 
 	void steckTube_plus()
 	{
 		if (var_steckTube_cur < (steck->getCountSteckFull() - 2))	var_steckTube_cur++;
-		else		var_steckTube_cur = 0;
+// 		else		var_steckTube_cur = 0;
 		steckTube_vDat();
 	}
 	
