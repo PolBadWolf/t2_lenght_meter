@@ -93,7 +93,11 @@ namespace ns_sensors
 			if ( !sensor[1]->getStat() && !sensor[2]->getStat() && (sensorsStep == SENSORS_STEP_Zero))
 			{	// начало измерения
 				s_count = 0;
-				time_sensors[0][1] = s_count;
+				for (uint8_t i = 0; i < 3; i++)
+				{	// reset counts
+					time_sensors[i][0] = 0;
+					time_sensors[i][1] = 0;
+				}
 				countTimeOut = false;
 				blockirovka = false;
 				sensorsStep = SENSORS_STEP_Start;
